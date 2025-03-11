@@ -1,6 +1,6 @@
 syntax="proto3";                // Version of protobuf
 package pb;                     // Current package name
-option csharp_namespace="Pb";   // Option for C# (给C#提供的选项)
+option csharp_namespace="Pb";   
 
 // Synchronize client player ID
 // 同步客户端玩家ID

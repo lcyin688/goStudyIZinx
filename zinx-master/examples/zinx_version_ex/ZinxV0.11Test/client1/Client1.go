@@ -2,10 +2,11 @@ package main
 
 import (
 	"fmt"
-	"github.com/aceld/zinx/zpack"
 	"io"
 	"net"
 	"time"
+
+	"github.com/aceld/zinx/zpack"
 )
 
 /*
