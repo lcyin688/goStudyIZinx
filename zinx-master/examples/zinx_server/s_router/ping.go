@@ -1,7 +1,6 @@
 package s_router
 
 import (
-	"github.com/aceld/zinx/examples/zinx_version_ex/protoDemo/pb"
 	"github.com/aceld/zinx/ziface"
 	"github.com/aceld/zinx/zlog"
 	"github.com/aceld/zinx/znet"
@@ -17,8 +16,6 @@ func (this *PingRouter) Handle(request ziface.IRequest) {
 
 	zlog.Ins().DebugF("Call PingRouter Handle")
 	// Read the data from the client first, then send back "ping...ping...ping".
-
-	pb.Person{}
 
 	zlog.Ins().DebugF("recv from client : msgId=%d, data=%+v, len=%d", request.GetMsgID(), string(request.GetData()), len(request.GetData()))
 
