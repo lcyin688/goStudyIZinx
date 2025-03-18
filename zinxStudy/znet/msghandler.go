@@ -49,6 +49,18 @@ type MsgHandle struct {
 	RouterSlices *RouterSlices
 }
 
+// +--------+--------+---------------+
+// | 4字节长度 | 4字节op | protobuf数据体 |
+// +--------+--------+---------------+
+type PacketHeader struct {
+	TotalLen uint32 // 包含头部的总长度 (大端序)
+	OpCode   uint32 // 操作码 (大端序)
+}
+
+const (
+	headerSize = 8 // 4 + 4 bytes
+)
+
 // newMsgHandle creates MsgHandle
 // zinxRole: IServer/IClient
 func newMsgHandle() *MsgHandle {
@@ -262,6 +274,7 @@ func (mh *MsgHandle) doFuncHandler(request ziface.IFuncRequest, workerID int) {
 // doMsgHandler immediately handles messages in a non-blocking manner
 // (立即以非阻塞方式处理消息)
 func (mh *MsgHandle) doMsgHandler(request ziface.IRequest, workerID int) {
+
 	defer func() {
 		if err := recover(); err != nil {
 			zlog.Ins().ErrorF("workerID: %d doMsgHandler panic: %v", workerID, err)

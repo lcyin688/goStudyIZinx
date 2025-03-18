@@ -58,3 +58,7 @@ type IConnection interface {
 	RemoveCloseCallback(handler, key interface{})               // Remove a close callback function (删除关闭回调函数)
 	InvokeCloseCallbacks()                                      // Trigger the close callback function (触发关闭回调函数，独立协程完成)
 }
+
+func SendMsg(param any, param2 any) error {
+	panic("unimplemented")
+}

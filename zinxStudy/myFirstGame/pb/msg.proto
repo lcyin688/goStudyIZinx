@@ -1,0 +1,42 @@
+syntax="proto3";                // Version of protobuf
+package msg;                     // Current package name
+option go_package = "./msg";  // Go 服务器端代码的包路径
+
+enum MsgId {
+  MSG_Default = 0;  
+  MSG_CS_Ping = 1;  // 心跳请求
+  MSG_SC_Pong = 2;  // 心跳响应
+
+  MSG_CS_Login = 101;  // 登录请求
+  MSG_SC_Login = 102;  // 登录响应
+}
+
+
+message CS_Ping {
+  int64 Timestamp = 1;
+}
+message SC_Pong {
+  int64 Timestamp = 1;
+}
+
+
+message PlayerInfo {
+    int32 userId = 1;
+    int32 gender = 2;
+    string userName = 3;
+    string nickName = 4;
+}
+
+
+
+message CS_Login {
+    string account = 1;
+    string password = 2;
+    int32 server_id = 3;
+}
+
+
+message SC_Login {
+    int32 code = 1;
+    string token = 2;
+}

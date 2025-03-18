@@ -19,8 +19,8 @@ func (this *PingRouter) Handle(request ziface.IRequest) {
 
 	zlog.Ins().DebugF("recv from client : msgId=%d, data=%+v, len=%d", request.GetMsgID(), string(request.GetData()), len(request.GetData()))
 
-	err := request.GetConnection().SendMsg(2, []byte("pong-server"))
-	if err != nil {
-		zlog.Error(err)
-	}
+	// err := request.GetConnection().SendMsg(2, []byte("pong-server"))
+	// if err != nil {
+	// 	zlog.Error(err)
+	// }
 }
