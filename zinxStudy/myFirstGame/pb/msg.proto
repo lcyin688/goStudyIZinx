@@ -9,8 +9,11 @@ enum MsgId {
 
   MSG_CS_Login = 101;  // 登录请求
   MSG_SC_Login = 102;  // 登录响应
-}
 
+  MSG_CS_Register = 103;  // 注册请求
+  MSG_SC_Register = 104;  // 注册响应
+  
+}
 
 message CS_Ping {
   int64 Timestamp = 1;
@@ -21,22 +24,42 @@ message SC_Pong {
 
 
 message PlayerInfo {
-    int32 userId = 1;
-    int32 gender = 2;
-    string userName = 3;
-    string nickName = 4;
+    int32 headId = 1;
+    string account = 2;
+    string nickName = 3;
 }
 
 
-
+/**
+ * 登录请求
+ */
 message CS_Login {
     string account = 1;
     string password = 2;
-    int32 server_id = 3;
+    int32 serverId = 3;
 }
 
-
+/**
+ * 登录响应
+ */
 message SC_Login {
     int32 code = 1;
     string token = 2;
+    PlayerInfo playerInfo = 3;
+}
+
+/**
+ * 注册请求
+ */
+message CS_Register {
+    string account = 1;
+    string password = 2;  
+    int32 headId=3;
+}
+
+/**
+ * 注册响应
+ */
+message SC_Register {
+    int32 code = 1;
 }
