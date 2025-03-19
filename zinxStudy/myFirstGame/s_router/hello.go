@@ -27,6 +27,7 @@ func (this *HelloZinxRouter) Handle(request ziface.IRequest) {
 	}
 	fmt.Printf("recv from client : msgId=%+v, data=%+v\n", request.GetMsgID(), msg)
 	sendPong(request)
+
 }
 
 func sendPong(request ziface.IRequest) {
@@ -36,19 +37,14 @@ func sendPong(request ziface.IRequest) {
 	SendMsg(uint32(msg.MsgId_MSG_SC_Pong), data, request)
 }
 
-func SendMsg(msgID uint32, res proto.Message, req ziface.IRequest) {
+func SendMsg(msgID uint32, data proto.Message, req ziface.IRequest) {
 
-	// data, _ := proto.Marshal(res)
-
-	// // 2. 封装Zinx消息（MsgID=1）
-	// msg := zpack.NewMsgPackage(1, data)
-
-	// // 3. 发送给客户端
-	// if err := req.GetConnection().SendMsg(msg); err != nil {
-	// 	log.Printf("发送失败: %v", err)
-	// }
-
-	msg, err := proto.Marshal(res)
+	if req.GetConnection() == nil {
+		fmt.Println("connection in player is nil")
+		return
+	}
+	// 将proto Message结构体序列化
+	msg, err := proto.Marshal(data)
 	if err != nil {
 		fmt.Println("marshal msg err: ", err)
 		return
@@ -58,5 +54,4 @@ func SendMsg(msgID uint32, res proto.Message, req ziface.IRequest) {
 		fmt.Println("Player SendMsg error !")
 		return
 	}
-	return
 }
