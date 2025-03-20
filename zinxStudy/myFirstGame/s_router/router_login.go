@@ -3,11 +3,16 @@ package s_router
 import (
 	"fmt"
 
+	enumeCode "github.com/aceld/zinx/myFirstGame/EnumeCode"
+	"github.com/aceld/zinx/myFirstGame/model"
+	msg "github.com/aceld/zinx/myFirstGame/pb"
 	"github.com/aceld/zinx/ziface"
-	"github.com/aceld/zinx/zlog"
 	"github.com/aceld/zinx/znet"
 	"google.golang.org/protobuf/proto"
 )
+
+type UserData struct {
+}
 
 func SendMsg(msgID uint32, data proto.Message, req ziface.IRequest) {
 
@@ -34,28 +39,50 @@ type RouterLogin struct {
 
 // RouterLogin Handle
 func (t *RouterLogin) Handle(request ziface.IRequest) {
-	zlog.Ins().DebugF("Call HelloZinxRouter Handle")
-	zlog.Ins().DebugF("recv from client : msgId=%d, data=%+v, len=%d", request.GetMsgID(), string(request.GetData()), len(request.GetData()))
+	// zlog.Ins().DebugF("Call HelloZinxRouter Handle")
+	// zlog.Ins().DebugF("recv from client : msgId=%d, data=%+v, len=%d", request.GetMsgID(), string(request.GetData()), len(request.GetData()))
+	msgTemp := &msg.CS_Login{}
+	err := proto.Unmarshal(request.GetData(), msgTemp)
+	if err != nil {
+		fmt.Println("Position Unmarshal error ", err, " data = ", request.GetData())
+		return
+	}
+	pUserData, errCodeType := model.ValidateUserData(msgTemp.Account, msgTemp.Password)
+	if errCodeType != enumeCode.OK || pUserData == nil { // 登录失败
+		sendLoginErr(request, errCodeType)
+	} else {
+		data := &msg.SC_Login{
+			Code:       int32(errCodeType),
+			Token:      "",
+			PlayerInfo: pUserData,
+		}
+		SendMsg(uint32(msg.MsgId_MSG_SC_Login), data, request)
+	}
+}
 
-	// msgId := request.GetMsgID()
-	// switch msgId {
-	// case uint32(msg.MsgId_MSG_CS_Ping):
-
-	// case uint32(msg.MsgId_MSG_CS_Login):
-
-	// default:
-	// 	fmt.Println("msgId not found")
-	// }
-
+func sendLoginErr(request ziface.IRequest, code enumeCode.ErrCodeType) {
+	data := &msg.SC_Login{
+		Code:       int32(code),
+		Token:      "",
+		PlayerInfo: nil,
+	}
+	SendMsg(uint32(msg.MsgId_MSG_SC_Login), data, request)
 }
 
 type RouterRegister struct {
 	znet.BaseRouter
 }
 
-// RouterLogin Handle
 func (t *RouterRegister) Handle(request ziface.IRequest) {
-	zlog.Ins().DebugF("Call RouterRegister Handle")
-	zlog.Ins().DebugF("recv from client : msgId=%d, data=%+v, len=%d", request.GetMsgID(), string(request.GetData()), len(request.GetData()))
-
+	msgTemp := &msg.CS_Register{}
+	err := proto.Unmarshal(request.GetData(), msgTemp)
+	if err != nil {
+		fmt.Println("Position Unmarshal error ", err, " data = ", request.GetData())
+		return
+	}
+	errCodeType := model.RegisteUserData(msgTemp.Account, msgTemp.Password, msgTemp.HeadId)
+	data := &msg.SC_Register{
+		Code: int32(errCodeType),
+	}
+	SendMsg(uint32(msg.MsgId_MSG_SC_Register), data, request)
 }

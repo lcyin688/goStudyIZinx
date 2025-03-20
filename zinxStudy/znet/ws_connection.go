@@ -2,7 +2,6 @@ package znet
 
 import (
 	"context"
-	"encoding/hex"
 	"errors"
 	"net"
 	"strconv"
@@ -230,7 +229,7 @@ func (c *WsConnection) StartReader() {
 				zlog.Ins().ErrorF("read msg head [read datalen=%d], error = %s", n, err.Error())
 				return
 			}
-			zlog.Ins().DebugF("read buffer %s \n", hex.EncodeToString(buffer[0:n]))
+			// zlog.Ins().DebugF("read buffer %s \n", hex.EncodeToString(buffer[0:n]))
 
 			// Update the Active status of heartbeat detection normally after reading data from the peer.
 			// (正常读取到对端数据，更新心跳检测Active状态)
@@ -248,7 +247,7 @@ func (c *WsConnection) StartReader() {
 					continue
 				}
 				for _, bytes := range bufArrays {
-					zlog.Ins().DebugF("read buffer %s \n", hex.EncodeToString(bytes))
+					// zlog.Ins().DebugF("read buffer %s \n", hex.EncodeToString(bytes))
 					msg := zpack.NewMessage(uint32(len(bytes)), bytes)
 					// Get the Request data requested by the current client.
 					// (得到当前客户端请求的Request数据)
