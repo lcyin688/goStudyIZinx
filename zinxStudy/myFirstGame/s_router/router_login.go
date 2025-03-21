@@ -11,9 +11,6 @@ import (
 	"google.golang.org/protobuf/proto"
 )
 
-type UserData struct {
-}
-
 func SendMsg(msgID uint32, data proto.Message, req ziface.IRequest) {
 
 	if req.GetConnection() == nil {
