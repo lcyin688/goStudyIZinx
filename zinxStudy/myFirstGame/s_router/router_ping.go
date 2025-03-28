@@ -34,5 +34,5 @@ func sendPong(request ziface.IRequest) {
 	data := &msg.SC_Pong{
 		Timestamp: 1,
 	}
-	SendMsg(uint32(msg.MsgId_MSG_SC_Pong), data, request)
+	SendMsg(uint32(msg.MsgId_MSG_SC_Pong), data, request.GetConnection())
 }
