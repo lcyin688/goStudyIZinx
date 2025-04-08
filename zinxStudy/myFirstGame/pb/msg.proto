@@ -12,8 +12,31 @@ enum MsgId {
 
   MSG_CS_Register = 103;  // 注册请求
   MSG_SC_Register = 104;  // 注册响应
-  
+
+  MSG_CS_HallInfo = 111;  // 大厅数据请求
+  MSG_SC_HallInfo = 112;  // 大厅数据响应
+
+  MSG_CS_CreateRoom = 121;  // 创建房间请求
+  MSG_SC_CreateRoom = 122;  // 创建房间响应
+
+  MSG_CS_JoinRoom = 123;  // 加入房间请求
+  MSG_SC_JoinRoom = 124;  // 加入房间响应
+
+  MSG_CS_MatchRoom = 125;  // 匹配房间请求
+  MSG_SC_MatchRoom = 126;  // 匹配房间响应
+
 }
+
+enum RoomState {
+	None   = 0 ; // 未开始
+	Ready  = 1 ; // 准备
+	Draw   = 2 ; // 画画
+	Result = 3 ; // 结果
+	Over   = 4 ; // 结束
+}
+
+
+
 
 message CS_Ping {
   int64 Timestamp = 1;
@@ -27,6 +50,33 @@ message PlayerInfo {
     int32 headId = 1;
     string account = 2;
     string nickName = 3;
+}
+
+message RoomInfo {
+    // 房间id
+    int32 rid = 1;
+    //房间人数
+    int32 gameNum = 2;
+    //房间最大座位数
+    int32 max = 3;
+    //房间状态
+    int32 state = 4;
+    //房间创建时间
+    int32 createTime = 5;
+    //开始时间
+	int32 startTime = 6;
+    //结果时间
+	int32 resultTime = 7;
+    //提示
+	string hint = 8;
+    //单词
+	string word = 9;
+    // 单词索引
+	int32 wordIndex = 10;
+    //画师
+    int32 painter = 11;
+    //房间所有玩家
+    map<int32, PlayerInfo> mapPlayerInfo = 12;
 }
 
 
@@ -45,7 +95,7 @@ message CS_Login {
 message SC_Login {
     int32 code = 1;
     string token = 2;
-    PlayerInfo playerInfo = 3;
+    PlayerInfo PlayerInfo = 3;
 }
 
 /**
@@ -61,5 +111,63 @@ message CS_Register {
  * 注册响应
  */
 message SC_Register {
+    int32 code = 1;
+}
+
+
+/**
+ * 大厅数据请求
+ */
+message CS_HallInfo {
+
+}
+
+/**
+ * 大厅数据响应 repeated 数据写法
+ */
+message SC_HallInfo {
+   repeated RoomInfo roomArr = 1;
+}
+
+
+/**
+ * 创建房间请求
+ */
+message CS_CreateRoom {
+    string id = 1;
+}
+
+/**
+ * 创建房间响应
+ */
+message SC_CreateRoom {
+    int32 code = 1;
+}
+
+/**
+ * 加入房间请求
+ */
+message CS_JoinRoom {
+    string id = 1;
+}
+
+/**
+ * 加入房间响应
+ */
+message SC_JoinRoom {
+    int32 code = 1;
+}
+
+/**
+ * 匹配房间请求
+ */
+message CS_MatchRoom {
+    string id = 1;
+}
+
+/**
+ * 匹配房间响应
+ */
+message SC_MatchRoom {
     int32 code = 1;
 }
