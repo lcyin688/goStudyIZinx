@@ -2,6 +2,7 @@ package playerData
 
 import (
 	"fmt"
+	"time"
 
 	"github.com/aceld/zinx/myFirstGame/config"
 	msg "github.com/aceld/zinx/myFirstGame/pb"
@@ -46,24 +47,16 @@ func GetPRoom(rid int32) (*msg.RoomInfo, bool) {
 	return pRoom, ok
 }
 
-func GetRoomIdList() []interface{} {
-	var list []interface{}
+func GetRoomIdList() []*msg.RoomInfo {
+	list := []*msg.RoomInfo{}
 	for _, r := range RoomMap {
-		l := 0
-		for _, s := range r.MapPlayerInfo {
-			if s != nil {
-				l++
-			}
-		}
-		list = append(list, struct {
-			Rid int32 `json:"rid"`
-			Num int32 `json:"num"` //人数
-			Max int   `json:"max"` //房间座位数
-		}{
-			Rid: r.Rid,
-			Num: (int32(l)),
-			Max: len(r.MapPlayerInfo),
-		})
+		// l := 0
+		// for _, s := range r.MapPlayerInfo {
+		// 	if s != nil {
+		// 		l++
+		// 	}
+		// }
+		list = append(list, r)
 	}
 	fmt.Println("房间数据")
 	fmt.Println(list)
@@ -80,13 +73,48 @@ func GetFreeSeat(pRoom *msg.RoomInfo) int {
 	return 0
 }
 
-func GetANewRid() int {
-	maxRid := 0
+func GetANewRid() int32 {
+	var maxRid int32 = 0
 	for _, v := range RoomMap {
-		if (int(v.Rid)) > maxRid {
-			maxRid = int(v.Rid)
+		if (v.Rid) > maxRid {
+			maxRid = v.Rid
 		}
 	}
 	maxRid++
 	return maxRid
+}
+
+func CreateRoom() *msg.RoomInfo {
+	mapPlayerInfo := make(map[int32]*msg.GameUserItem)
+	rid := GetANewRid()
+	for i := 1; i < config.SeatSum; i++ {
+		mapPlayerInfo[int32(i)] = nil
+	}
+	timestamp := time.Now().Unix()
+	fmt.Println("当前时间戳（秒）：", timestamp)
+	r := msg.RoomInfo{
+		Rid:           rid,
+		GameNum:       0,
+		Max:           int32(config.SeatSum),
+		State:         int32(msg.RoomState_None),
+		CreateTime:    timestamp,
+		StartTime:     0,
+		ResultTime:    0,
+		Hint:          "",
+		Word:          "",
+		WordIndex:     0,
+		Painter:       0,
+		MapPlayerInfo: mapPlayerInfo,
+	}
+	SetPRoom(&r)
+	return &r
+}
+
+func EnterRoom(pUser *msg.GameUserItem, pRoom *msg.RoomInfo, seat int32) {
+	pUser.Rid = pRoom.Rid
+	pUser.Seat = seat
+	pRoom.MapPlayerInfo[seat] = pUser
+	if pRoom.State == int32(msg.RoomState_None) {
+		pRoom.State = int32(msg.RoomState_Ready)
+	}
 }

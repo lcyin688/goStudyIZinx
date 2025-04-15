@@ -62,11 +62,11 @@ message RoomInfo {
     //房间状态
     int32 state = 4;
     //房间创建时间
-    int32 createTime = 5;
+    int64 createTime = 5;
     //开始时间
-	int32 startTime = 6;
+	int64 startTime = 6;
     //结果时间
-	int32 resultTime = 7;
+	int64 resultTime = 7;
     //提示
 	string hint = 8;
     //单词
@@ -76,9 +76,22 @@ message RoomInfo {
     //画师
     int32 painter = 11;
     //房间所有玩家
-    map<int32, PlayerInfo> mapPlayerInfo = 12;
+    map<int32, GameUserItem> mapPlayerInfo = 12;
 }
 
+/**
+ * 房间某个玩家信息
+ */
+message GameUserItem {
+    PlayerInfo plyer = 1;
+    // 房间id
+    int32 rid = 2;
+    // 房间id
+    int32 seat = 3;
+    // 分数
+    int32 score = 4;
+    bool isReady = 5;
+}
 
 /**
  * 登录请求
@@ -134,7 +147,8 @@ message SC_HallInfo {
  * 创建房间请求
  */
 message CS_CreateRoom {
-    string id = 1;
+
+
 }
 
 /**
@@ -142,13 +156,14 @@ message CS_CreateRoom {
  */
 message SC_CreateRoom {
     int32 code = 1;
+    RoomInfo roomInfo = 2;
 }
 
 /**
  * 加入房间请求
  */
 message CS_JoinRoom {
-    string id = 1;
+    int32 id = 1;
 }
 
 /**
@@ -156,13 +171,14 @@ message CS_JoinRoom {
  */
 message SC_JoinRoom {
     int32 code = 1;
+    RoomInfo roomInfo = 2;
 }
 
 /**
  * 匹配房间请求
  */
 message CS_MatchRoom {
-    string id = 1;
+    int32 id = 1;
 }
 
 /**
@@ -170,4 +186,5 @@ message CS_MatchRoom {
  */
 message SC_MatchRoom {
     int32 code = 1;
+    RoomInfo roomInfo = 2;
 }

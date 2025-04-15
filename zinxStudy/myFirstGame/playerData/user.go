@@ -1,28 +1,22 @@
 package playerData
 
-import "fmt"
+import (
+	"fmt"
 
-type User struct {
-	Uid      string `json:"uid"`
-	Cid      int    `-`
-	Rid      int    `json:"rid"`
-	Seat     int    `json:"seat"`
-	Score    int    `json:"score"`
-	IsReady  bool   `json:"isReady"`
-	Username string `json:"username"`
-}
+	msg "github.com/aceld/zinx/myFirstGame/pb"
+)
 
-var UserMap map[string]*User
+var UserMap map[string]*msg.GameUserItem
 
 func init() {
-	UserMap = make(map[string]*User)
+	UserMap = make(map[string]*msg.GameUserItem)
 }
 
-func SetPUser(pUser *User) {
-	UserMap[pUser.Uid] = pUser
+func SetPUser(pUser *msg.GameUserItem) {
+	UserMap[pUser.Plyer.Account] = pUser
 }
 
-func GetPUser(uid string) *User {
+func GetPUser(uid string) *msg.GameUserItem {
 	pUser, ok := UserMap[uid]
 	if !ok {
 		fmt.Println("没有该用户")

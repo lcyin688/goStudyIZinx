@@ -10,4 +10,5 @@ const (
 	RegisterPassWord ErrCodeType = 4 //注册密码不合法
 	LoginPassWord    ErrCodeType = 5 //登录密码错误
 	LoginName        ErrCodeType = 6 //登录账号不存在
+	EnterRoomFull    ErrCodeType = 7 //房间已满
 )
