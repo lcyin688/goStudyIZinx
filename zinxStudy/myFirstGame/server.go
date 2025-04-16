@@ -33,10 +33,13 @@ func initAddRouter(s ziface.IServer) {
 	//创建房间信息
 	s.AddRouter(uint32(msg.MsgId_MSG_CS_CreateRoom), &s_router.RouterCreateRoom{})
 
-	//创建房间信息
+	//进入房间
 	s.AddRouter(uint32(msg.MsgId_MSG_CS_JoinRoom), &s_router.RouterJoinRoom{})
 
 	//创建房间信息
 	s.AddRouter(uint32(msg.MsgId_MSG_CS_MatchRoom), &s_router.RouterMatchRoom{})
+
+	//你画我猜准备
+	s.AddRouter(uint32(msg.MsgId_MSG_CS_ReadyNHWC), &s_router.RouterReady{})
 
 }

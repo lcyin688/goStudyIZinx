@@ -14,7 +14,7 @@ func init() {
 
 	RoomMap = make(map[int32]*msg.RoomInfo)
 	for i := 1; i <= config.RoomSum; i++ {
-		seatMap := make(map[int32]*msg.PlayerInfo)
+		seatMap := make(map[int32]*msg.GameUserItem)
 		for j := 1; j <= config.SeatSum; j++ {
 			seatMap[int32(j)] = nil
 		}
@@ -85,10 +85,10 @@ func GetANewRid() int32 {
 }
 
 func CreateRoom() *msg.RoomInfo {
-	mapPlayerInfo := make(map[int32]*msg.GameUserItem)
+	mapGameUserItem := make(map[int32]*msg.GameUserItem)
 	rid := GetANewRid()
 	for i := 1; i < config.SeatSum; i++ {
-		mapPlayerInfo[int32(i)] = nil
+		mapGameUserItem[int32(i)] = nil
 	}
 	timestamp := time.Now().Unix()
 	fmt.Println("当前时间戳（秒）：", timestamp)
@@ -104,7 +104,7 @@ func CreateRoom() *msg.RoomInfo {
 		Word:          "",
 		WordIndex:     0,
 		Painter:       0,
-		MapPlayerInfo: mapPlayerInfo,
+		MapPlayerInfo: mapGameUserItem,
 	}
 	SetPRoom(&r)
 	return &r

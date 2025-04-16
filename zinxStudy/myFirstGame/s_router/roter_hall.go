@@ -60,51 +60,39 @@ func (t *RouterJoinRoom) Handle(req ziface.IRequest) {
 
 // 进入房间
 func onEnter(req ziface.IRequest, msgTemp *msg.CS_JoinRoom) {
-	roomInfo, ok := playerData.GetPRoom(msgTemp.Id)
+	rid := msgTemp.RoomId
+	roomInfo, ok := playerData.GetPRoom(rid)
 	if ok {
 		freeSeat := playerData.GetFreeSeat(roomInfo)
 		if freeSeat == 0 { //房间已满
-			data := &msg.SC_Register{
+			data := &msg.SC_JoinRoom{
 				Code: int32(enumeCode.LoginPassWord),
 			}
 			SendMsg(uint32(msg.MsgId_MSG_SC_JoinRoom), data, req.GetConnection())
 		} else {
-			pUser := playerData.GetPUser(string(msgTemp.Id))
-			playerData.EnterRoom(pUser, roomInfo, freeSeat)
+			pUser := playerData.GetPUser(string(rid))
+			playerData.EnterRoom(pUser, roomInfo, int32(freeSeat))
 			// 通知客户端进入房间
-			m := WsMessage{
-				Name:  "enter",
-				Value: roomInfo,
+			data := &msg.SC_JoinRoom{
+				Code:     int32(enumeCode.OK),
+				RoomInfo: roomInfo,
 			}
-			Send(cid, m)
+			SendMsg(uint32(msg.MsgId_MSG_SC_JoinRoom), data, req.GetConnection())
 
 			//通知其他客户端有人加入房间
-			pUser := data.GetPUser(uid)
-			BroadCast(rid, WsMessage{
-				Name:  "message",
-				Value: "【系统】" + pUser.Username + "进入房间",
-			}, cid)
-			BroadCast(rid, WsMessage{
-				Name:  "room",
-				Value: roomInfo,
-			}, cid)
 
-			// 更新大厅房间信息
-			roomList := data.GetRoomIdList()
-			BroadCast(0, WsMessage{
-				Name: "hall",
-				Value: struct {
-					RoomList []interface{} `json:"roomlist"`
-				}{
-					RoomList: roomList,
-				},
-			}, cid)
+			roomList := playerData.GetRoomIdList()
+			dataHall := &msg.SC_HallInfo{
+				RoomArr: roomList,
+			}
+			// 更新大厅房间信息 推送给所有玩家
+			BroadCast(0, uint32(msg.MsgId_MSG_SC_HallInfo), dataHall, "")
 		}
 	} else {
-		// data := &msg.SC_Register{
-		// 	Code: int32(errCodeType),
-		// }
-		// SendMsg(uint32(msg.MsgId_MSG_SC_Register), data, req.GetConnection())
+		data := &msg.SC_JoinRoom{
+			Code: int32(enumeCode.NoRoom),
+		}
+		SendMsg(uint32(msg.MsgId_MSG_SC_JoinRoom), data, req.GetConnection())
 	}
 
 }
@@ -125,4 +113,83 @@ func (t *RouterMatchRoom) Handle(req ziface.IRequest) {
 	// 	Code: int32(errCodeType),
 	// }
 	// SendMsg(uint32(msg.MsgId_MSG_SC_Register), data, req.GetConnection())
+}
+
+type RouterReady struct {
+	znet.BaseRouter
+}
+
+func (t *RouterReady) Handle(req ziface.IRequest) {
+	msgTemp := &msg.SC_ReadyNHWC{}
+	err := proto.Unmarshal(req.GetData(), msgTemp)
+	if err != nil {
+		fmt.Println("Position Unmarshal error ", err, " data = ", req.GetData())
+		return
+	}
+	onReady(req.GetConnection(), msgTemp)
+}
+
+// 客户端请求准备
+func onReady(req ziface.IConnection, msgTemp *msg.SC_ReadyNHWC) {
+	account := ClientsMapCon[req].Account
+
+	pUser := playerData.GetPUser(account)
+	if pUser.IsReady {
+		// 	fmt.Println("用户已经准备")
+		// 	Send(cid, WsMessage{
+		// 		Name: "error",
+		// 		Value: struct {
+		// 			Code    string `json:"code"`
+		// 			Message string `json:"message"`
+		// 		}{
+		// 			Code:    "2",
+		// 			Message: "你已经准备了",
+		// 		},
+		// 	})
+	} else {
+		// 	pUser.IsReady = true
+		// 	m := WsMessage{
+		// 		Name:  "ready",
+		// 		Value: map[string]int{"seat": pUser.Seat},
+		// 	}
+		// 	BroadCast(pUser.Rid, m, 0)
+		// 	if CanStartGame(pUser.Rid) {
+		// 		StartGame(pUser.Rid)
+		// 	}
+	}
+
+	// roomInfo, ok := playerData.GetPRoom(rid)
+	// if ok {
+	// 	freeSeat := playerData.GetFreeSeat(roomInfo)
+	// 	if freeSeat == 0 { //房间已满
+	// 		data := &msg.SC_JoinRoom{
+	// 			Code: int32(enumeCode.LoginPassWord),
+	// 		}
+	// 		SendMsg(uint32(msg.MsgId_MSG_SC_JoinRoom), data, req.GetConnection())
+	// 	} else {
+	// 		pUser := playerData.GetPUser(string(rid))
+	// 		playerData.EnterRoom(pUser, roomInfo, int32(freeSeat))
+	// 		// 通知客户端进入房间
+	// 		data := &msg.SC_JoinRoom{
+	// 			Code:     int32(enumeCode.OK),
+	// 			RoomInfo: roomInfo,
+	// 		}
+	// 		SendMsg(uint32(msg.MsgId_MSG_SC_JoinRoom), data, req.GetConnection())
+
+	// 		//通知其他客户端有人加入房间
+
+	// 		roomList := playerData.GetRoomIdList()
+	// 		dataHall := &msg.SC_HallInfo{
+	// 			RoomArr: roomList,
+	// 		}
+	// 		// 更新大厅房间信息 推送给所有玩家
+	// 		BroadCast(0, uint32(msg.MsgId_MSG_SC_HallInfo), dataHall, "")
+	// 	}
+	// } else {
+	// 	data := &msg.SC_JoinRoom{
+	// 		Code: int32(enumeCode.NoRoom),
+	// 	}
+	// 	SendMsg(uint32(msg.MsgId_MSG_SC_JoinRoom), data, req.GetConnection())
+	// }
+
 }

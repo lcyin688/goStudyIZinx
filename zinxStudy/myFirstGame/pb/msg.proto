@@ -25,6 +25,10 @@ enum MsgId {
   MSG_CS_MatchRoom = 125;  // 匹配房间请求
   MSG_SC_MatchRoom = 126;  // 匹配房间响应
 
+  MSG_CS_ReadyNHWC = 1001;  // 你画我猜准备请求
+  MSG_SC_ReadyNHWC = 1002;  // 你画我猜准备相应
+
+
 }
 
 enum RoomState {
@@ -67,7 +71,7 @@ message RoomInfo {
 	int64 startTime = 6;
     //结果时间
 	int64 resultTime = 7;
-    //提示
+    //提示z
 	string hint = 8;
     //单词
 	string word = 9;
@@ -163,7 +167,7 @@ message SC_CreateRoom {
  * 加入房间请求
  */
 message CS_JoinRoom {
-    int32 id = 1;
+    int32 roomId = 1;
 }
 
 /**
@@ -178,13 +182,29 @@ message SC_JoinRoom {
  * 匹配房间请求
  */
 message CS_MatchRoom {
-    int32 id = 1;
+
 }
 
 /**
  * 匹配房间响应
  */
 message SC_MatchRoom {
+    int32 code = 1;
+    RoomInfo roomInfo = 2;
+}
+
+
+/**
+ * 准备请求
+ */
+message CS_ReadyNHWC {
+
+}
+
+/**
+ * 准备响应
+ */
+message SC_ReadyNHWC {
     int32 code = 1;
     RoomInfo roomInfo = 2;
 }
