@@ -118,3 +118,21 @@ func EnterRoom(pUser *msg.GameUserItem, pRoom *msg.RoomInfo, seat int32) {
 		pRoom.State = int32(msg.RoomState_Ready)
 	}
 }
+
+/***
+ * 重置游戏
+ */
+func ResetGame(rid int32) {
+	pRoom, _ := GetPRoom(rid)
+	for _, user := range pRoom.MapPlayerInfo {
+		user.Plyer = nil
+		user.Rid = 0
+		user.Seat = 0
+		user.IsReady = false
+	}
+	pRoom.GameNum = 0
+	pRoom.State = int32(msg.RoomState_None)
+	pRoom.StartTime = 0
+	pRoom.Hint = ""
+	pRoom.Painter = 0
+}

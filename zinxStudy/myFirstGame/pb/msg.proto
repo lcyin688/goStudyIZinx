@@ -28,6 +28,20 @@ enum MsgId {
   MSG_CS_ReadyNHWC = 1001;  // 你画我猜准备请求
   MSG_SC_ReadyNHWC = 1002;  // 你画我猜准备相应
 
+  MSG_SC_StartNHWC = 1004;  // 你画我猜游戏开始
+
+  MSG_CS_DrawNHWC = 1005;  // 绘画请求
+  MSG_SC_DrawNHWC = 1006;  // 绘画响应
+
+
+  MSG_SC_ResultNHWC = 1008;  // 你画我猜游戏单轮游戏结束
+
+  MSG_SC_OverNHWC = 1010;  // 你画我猜游戏结束
+
+
+
+
+
 
 }
 
@@ -59,7 +73,7 @@ message PlayerInfo {
 message RoomInfo {
     // 房间id
     int32 rid = 1;
-    //房间人数
+    //房间当前轮次
     int32 gameNum = 2;
     //房间最大座位数
     int32 max = 3;
@@ -207,4 +221,40 @@ message CS_ReadyNHWC {
 message SC_ReadyNHWC {
     int32 code = 1;
     RoomInfo roomInfo = 2;
+}
+
+
+/**
+ * 游戏开始
+ */
+message SC_StartNHWC {
+    RoomInfo roomInfo = 1;
+}
+
+/**
+ * 游戏绘画请求
+ */
+message CS_DrawNHWC {
+
+
+}
+
+/**
+ * 游戏绘画响应
+ */
+message SC_DrawNHWC {
+
+
+}
+
+/**
+ * 小聚游戏结束 */
+message SC_ResultNHWC {
+    string word = 1;
+}
+
+/**
+ * 全部游戏结束 */
+message SC_OverNHWC {
+    string word = 1;
 }

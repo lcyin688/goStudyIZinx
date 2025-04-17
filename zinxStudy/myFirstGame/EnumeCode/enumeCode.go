@@ -12,4 +12,5 @@ const (
 	LoginName        ErrCodeType = 6 //登录账号不存在
 	EnterRoomFull    ErrCodeType = 7 //房间已满
 	NoRoom           ErrCodeType = 8 //不存在该房间
+	PlayerReadyed    ErrCodeType = 9 //玩家已经准备过了
 )

@@ -2,6 +2,7 @@ package s_router
 
 import (
 	"fmt"
+	"time"
 
 	enumeCode "github.com/aceld/zinx/myFirstGame/EnumeCode"
 	msg "github.com/aceld/zinx/myFirstGame/pb"
@@ -134,62 +135,150 @@ func onReady(req ziface.IConnection, msgTemp *msg.SC_ReadyNHWC) {
 	account := ClientsMapCon[req].Account
 
 	pUser := playerData.GetPUser(account)
+
+	rid := pUser.Rid
+	roomInfo, _ := playerData.GetPRoom(rid)
 	if pUser.IsReady {
 		// 	fmt.Println("用户已经准备")
-		// 	Send(cid, WsMessage{
-		// 		Name: "error",
-		// 		Value: struct {
-		// 			Code    string `json:"code"`
-		// 			Message string `json:"message"`
-		// 		}{
-		// 			Code:    "2",
-		// 			Message: "你已经准备了",
-		// 		},
-		// 	})
+		data := &msg.SC_ReadyNHWC{
+			Code:     int32(enumeCode.PlayerReadyed),
+			RoomInfo: roomInfo,
+		}
+		SendMsg(uint32(msg.MsgId_MSG_SC_ReadyNHWC), data, req)
 	} else {
-		// 	pUser.IsReady = true
-		// 	m := WsMessage{
-		// 		Name:  "ready",
-		// 		Value: map[string]int{"seat": pUser.Seat},
-		// 	}
-		// 	BroadCast(pUser.Rid, m, 0)
-		// 	if CanStartGame(pUser.Rid) {
-		// 		StartGame(pUser.Rid)
-		// 	}
+		pUser.IsReady = true
+		data := &msg.SC_ReadyNHWC{
+			Code:     int32(enumeCode.OK),
+			RoomInfo: roomInfo,
+		}
+		BroadCast(0, uint32(msg.MsgId_MSG_SC_ReadyNHWC), data, "")
+		if CanStartGame(pUser.Rid) {
+			StartGame(pUser.Rid)
+		}
 	}
 
-	// roomInfo, ok := playerData.GetPRoom(rid)
-	// if ok {
-	// 	freeSeat := playerData.GetFreeSeat(roomInfo)
-	// 	if freeSeat == 0 { //房间已满
-	// 		data := &msg.SC_JoinRoom{
-	// 			Code: int32(enumeCode.LoginPassWord),
-	// 		}
-	// 		SendMsg(uint32(msg.MsgId_MSG_SC_JoinRoom), data, req.GetConnection())
-	// 	} else {
-	// 		pUser := playerData.GetPUser(string(rid))
-	// 		playerData.EnterRoom(pUser, roomInfo, int32(freeSeat))
-	// 		// 通知客户端进入房间
-	// 		data := &msg.SC_JoinRoom{
-	// 			Code:     int32(enumeCode.OK),
-	// 			RoomInfo: roomInfo,
-	// 		}
-	// 		SendMsg(uint32(msg.MsgId_MSG_SC_JoinRoom), data, req.GetConnection())
+}
 
-	// 		//通知其他客户端有人加入房间
+/***
+ * 判断是否可以开始游戏
+ */
+func CanStartGame(rid int32) bool {
+	seatSum := 0
+	readySum := 0
+	seatMap := playerData.RoomMap[rid].MapPlayerInfo
+	for _, seat := range seatMap {
+		if seat != nil {
+			seatSum++
+			if seat.IsReady {
+				readySum++
+			}
+		}
+	}
+	if seatSum == readySum && seatSum >= 2 {
+		return true
+	} else {
+		return false
+	}
+}
 
-	// 		roomList := playerData.GetRoomIdList()
-	// 		dataHall := &msg.SC_HallInfo{
-	// 			RoomArr: roomList,
-	// 		}
-	// 		// 更新大厅房间信息 推送给所有玩家
-	// 		BroadCast(0, uint32(msg.MsgId_MSG_SC_HallInfo), dataHall, "")
-	// 	}
-	// } else {
-	// 	data := &msg.SC_JoinRoom{
-	// 		Code: int32(enumeCode.NoRoom),
-	// 	}
-	// 	SendMsg(uint32(msg.MsgId_MSG_SC_JoinRoom), data, req.GetConnection())
-	// }
+/***
+ * 开始游戏
+ */
+func StartGame(rid int32) {
+	pRoom, _ := playerData.GetPRoom(rid)
+	pRoom.Painter = getNextSeat(rid)
+	pRoom.WordIndex++
+	pRoom.Word = playerData.WordsList[pRoom.WordIndex].Word
+	pRoom.Hint = playerData.WordsList[pRoom.WordIndex].D
+	pRoom.State = int32(msg.RoomState_Draw)
+	pRoom.GameNum++
+	pRoom.StartTime = time.Now().Unix()
+	timer := time.NewTimer(time.Second * time.Duration(3))
+	pUser := pRoom.MapPlayerInfo[pRoom.Painter]
+
+	pUser.IsReady = true
+	data := &msg.SC_StartNHWC{
+		RoomInfo: pRoom,
+	}
+	BroadCast(rid, uint32(msg.MsgId_MSG_SC_StartNHWC), data, "")
+
+	go func() {
+		<-timer.C
+		if pRoom != nil && pRoom.State == int32(msg.RoomState_Draw) {
+			showAnswer(rid)
+		}
+	}()
+}
+func getNextSeat(rid int32) int32 {
+	pRoom, _ := playerData.GetPRoom(rid)
+	currSeat := pRoom.Painter
+	i := currSeat
+	for {
+		if i == int32(len(pRoom.MapPlayerInfo)) {
+			i = 1
+		} else {
+			i++
+		}
+		if pRoom.MapPlayerInfo[i] != nil {
+			return i
+		}
+	}
+
+}
+
+/***
+ * 显示答案
+ */
+func showAnswer(rid int32) {
+
+	data := &msg.SC_ResultNHWC{
+		Word: playerData.RoomMap[rid].Word,
+	}
+	BroadCast(rid, uint32(msg.MsgId_MSG_SC_StartNHWC), data, "")
+
+	timer2 := time.NewTimer(time.Second * time.Duration(3))
+	go func() {
+		<-timer2.C
+		if playerData.RoomMap[rid] == nil || playerData.RoomMap[rid].State != int32(msg.RoomState_Result) {
+			return
+		}
+		if playerData.RoomMap[rid].GameNum >= 3 {
+			OverGame(rid)
+		} else {
+			StartGame(rid)
+		}
+	}()
+}
+
+/***
+ * 游戏结束
+ */
+func OverGame(rid int32) {
+	data := &msg.SC_OverNHWC{
+		Word: playerData.RoomMap[rid].Word,
+	}
+	BroadCast(rid, uint32(msg.MsgId_MSG_SC_StartNHWC), data, "")
+
+	playerData.ResetGame(rid)
+}
+
+type RouterDraw struct {
+	znet.BaseRouter
+}
+
+func (t *RouterDraw) Handle(req ziface.IRequest) {
+	msgTemp := &msg.CS_DrawNHWC{}
+	err := proto.Unmarshal(req.GetData(), msgTemp)
+	if err != nil {
+		fmt.Println("Position Unmarshal error ", err, " data = ", req.GetData())
+		return
+	}
+
+	data := &msg.SC_DrawNHWC{}
+	account := ClientsMapCon[req.GetConnection()].Account
+	pUser := playerData.GetPUser(account)
+	rid := pUser.Rid
+
+	BroadCast(rid, uint32(msg.MsgId_MSG_SC_StartNHWC), data, "")
 
 }
