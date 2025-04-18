@@ -30,18 +30,24 @@ enum MsgId {
 
   MSG_SC_StartNHWC = 1004;  // 你画我猜游戏开始
 
-  MSG_CS_DrawNHWC = 1005;  // 绘画请求
-  MSG_SC_DrawNHWC = 1006;  // 绘画响应
+
 
 
   MSG_SC_ResultNHWC = 1008;  // 你画我猜游戏单轮游戏结束
 
   MSG_SC_OverNHWC = 1010;  // 你画我猜游戏结束
 
+  MSG_CS_NHWCDrawClear = 1011;  // 绘画清理请求
+  MSG_SC_NHWCDrawClear = 1012;  // 绘画清理响应
 
+  MSG_CS_NHWCDrawWidth = 1013;  // 绘画宽度请求
+  MSG_SC_NHWCDrawWidth = 1014;  // 绘画宽度响应
 
+  MSG_CS_NHWCDrawColor = 1015;  // 绘画颜色请求
+  MSG_SC_NHWCDrawColor = 1016;  // 绘画颜色响应
 
-
+  MSG_CS_NHWCDrawPath = 1017;  // 绘画路径请求
+  MSG_SC_NHWCDrawPath = 1018;  // 绘画路径响应
 
 }
 
@@ -96,6 +102,7 @@ message RoomInfo {
     //房间所有玩家
     map<int32, GameUserItem> mapPlayerInfo = 12;
 }
+
 
 /**
  * 房间某个玩家信息
@@ -232,22 +239,6 @@ message SC_StartNHWC {
 }
 
 /**
- * 游戏绘画请求
- */
-message CS_DrawNHWC {
-
-
-}
-
-/**
- * 游戏绘画响应
- */
-message SC_DrawNHWC {
-
-
-}
-
-/**
  * 小聚游戏结束 */
 message SC_ResultNHWC {
     string word = 1;
@@ -257,4 +248,80 @@ message SC_ResultNHWC {
  * 全部游戏结束 */
 message SC_OverNHWC {
     string word = 1;
+}
+
+
+/**
+ * 游戏绘画清理请求
+ */
+message CS_NHWCDrawClear {
+
+
+}
+
+/**
+ * 游戏绘画清理响应
+ */
+message SC_NHWCDrawClear {
+
+
+}
+
+/**
+ * 游戏绘画width请求
+ */
+message CS_NHWCDrawWidth {
+
+    int32 width = 1;
+
+}
+
+/**
+ * 游戏绘画width响应
+ */
+message SC_NHWCDrawWidth {
+
+    int32 width = 1;
+}
+
+/**
+ * 游戏绘画color请求
+ */
+message CS_NHWCDrawColor {
+
+    string color = 1;
+
+}
+
+/**
+ * 游戏绘画color响应
+ */
+message SC_NHWCDrawColor {
+
+    string color = 1;
+}
+
+message Vec2 {
+  float x = 1;
+  float y = 2;
+}
+
+message NHWCPoint {
+    bool isStart = 1;
+    Vec2 v2 = 2;
+}
+
+
+/**
+ * 游戏绘画path请求
+ */
+message CS_NHWCDrawPath {
+    repeated NHWCPoint pointArr = 1;
+}
+
+/**
+ * 游戏绘画path响应
+ */
+message SC_NHWCDrawPath {
+    repeated NHWCPoint pointArr = 1;
 }

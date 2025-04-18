@@ -4,8 +4,10 @@ import (
 	"fmt"
 	"time"
 
+	enumeCode "github.com/aceld/zinx/myFirstGame/EnumeCode"
 	"github.com/aceld/zinx/myFirstGame/config"
 	msg "github.com/aceld/zinx/myFirstGame/pb"
+	"github.com/aceld/zinx/ziface"
 )
 
 var RoomMap map[int32]*msg.RoomInfo
@@ -135,4 +137,21 @@ func ResetGame(rid int32) {
 	pRoom.StartTime = 0
 	pRoom.Hint = ""
 	pRoom.Painter = 0
+}
+
+func MathchRoom(req ziface.IConnection) (int32, *msg.RoomInfo) {
+	code := int32(enumeCode.NoRoomNotStart)
+	roomItem := &msg.RoomInfo{}
+	for _, v := range RoomMap {
+		if (v.State) <= int32(msg.RoomState_Ready) { //还没开打
+			//桌子没满
+			if len(v.MapPlayerInfo) < int(v.Max) {
+				code = int32(enumeCode.OK)
+				roomItem = v
+				break
+			}
+
+		}
+	}
+	return code, roomItem
 }

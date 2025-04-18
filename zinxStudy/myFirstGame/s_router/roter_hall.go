@@ -103,17 +103,19 @@ type RouterMatchRoom struct {
 }
 
 func (t *RouterMatchRoom) Handle(req ziface.IRequest) {
-	// msgTemp := &msg.CS_Register{}
-	// err := proto.Unmarshal(req.GetData(), msgTemp)
-	// if err != nil {
-	// 	fmt.Println("Position Unmarshal error ", err, " data = ", req.GetData())
-	// 	return
-	// }
-	// errCodeType := model.RegisteUserData(msgTemp.Account, msgTemp.Password, msgTemp.HeadId)
-	// data := &msg.SC_Register{
-	// 	Code: int32(errCodeType),
-	// }
-	// SendMsg(uint32(msg.MsgId_MSG_SC_Register), data, req.GetConnection())
+	msgTemp := &msg.CS_MatchRoom{}
+	err := proto.Unmarshal(req.GetData(), msgTemp)
+	if err != nil {
+		fmt.Println("Position Unmarshal error ", err, " data = ", req.GetData())
+		return
+	}
+	code, roomItem := playerData.MathchRoom(req.GetConnection())
+	data := &msg.SC_CreateRoom{
+		Code:     code,
+		RoomInfo: roomItem,
+	}
+	SendMsg(uint32(msg.MsgId_MSG_SC_MatchRoom), data, req.GetConnection())
+
 }
 
 type RouterReady struct {
@@ -262,23 +264,85 @@ func OverGame(rid int32) {
 	playerData.ResetGame(rid)
 }
 
-type RouterDraw struct {
+type RouterDrawClear struct {
 	znet.BaseRouter
 }
 
-func (t *RouterDraw) Handle(req ziface.IRequest) {
-	msgTemp := &msg.CS_DrawNHWC{}
+func (t *RouterDrawClear) Handle(req ziface.IRequest) {
+	msgTemp := &msg.CS_NHWCDrawClear{}
 	err := proto.Unmarshal(req.GetData(), msgTemp)
 	if err != nil {
 		fmt.Println("Position Unmarshal error ", err, " data = ", req.GetData())
 		return
 	}
 
-	data := &msg.SC_DrawNHWC{}
+	data := &msg.SC_NHWCDrawClear{}
 	account := ClientsMapCon[req.GetConnection()].Account
 	pUser := playerData.GetPUser(account)
 	rid := pUser.Rid
 
+	BroadCast(rid, uint32(msg.MsgId_MSG_SC_NHWCDrawClear), data, "")
+
+}
+
+type RouterDrawWidth struct {
+	znet.BaseRouter
+}
+
+func (t *RouterDrawWidth) Handle(req ziface.IRequest) {
+	msgTemp := &msg.CS_NHWCDrawWidth{}
+	err := proto.Unmarshal(req.GetData(), msgTemp)
+	if err != nil {
+		fmt.Println("Position Unmarshal error ", err, " data = ", req.GetData())
+		return
+	}
+
+	account := ClientsMapCon[req.GetConnection()].Account
+	pUser := playerData.GetPUser(account)
+	rid := pUser.Rid
+	data := &msg.SC_NHWCDrawWidth{}
+	data.Width = msgTemp.Width
+	BroadCast(rid, uint32(msg.MsgId_MSG_SC_NHWCDrawWidth), data, "")
+
+}
+
+type RouterDrawColor struct {
+	znet.BaseRouter
+}
+
+func (t *RouterDrawColor) Handle(req ziface.IRequest) {
+	msgTemp := &msg.CS_NHWCDrawColor{}
+	err := proto.Unmarshal(req.GetData(), msgTemp)
+	if err != nil {
+		fmt.Println("Position Unmarshal error ", err, " data = ", req.GetData())
+		return
+	}
+
+	account := ClientsMapCon[req.GetConnection()].Account
+	pUser := playerData.GetPUser(account)
+	rid := pUser.Rid
+	data := &msg.SC_NHWCDrawColor{}
+	data.Color = msgTemp.Color
+	BroadCast(rid, uint32(msg.MsgId_MSG_SC_NHWCDrawColor), data, "")
+
+}
+
+type RouterDrawPath struct {
+	znet.BaseRouter
+}
+
+func (t *RouterDrawPath) Handle(req ziface.IRequest) {
+	msgTemp := &msg.CS_NHWCDrawPath{}
+	err := proto.Unmarshal(req.GetData(), msgTemp)
+	if err != nil {
+		fmt.Println("Position Unmarshal error ", err, " data = ", req.GetData())
+		return
+	}
+	account := ClientsMapCon[req.GetConnection()].Account
+	pUser := playerData.GetPUser(account)
+	rid := pUser.Rid
+	data := &msg.SC_NHWCDrawPath{}
+	data.PointArr = msgTemp.PointArr
 	BroadCast(rid, uint32(msg.MsgId_MSG_SC_StartNHWC), data, "")
 
 }

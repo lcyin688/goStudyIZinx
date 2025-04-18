@@ -24,28 +24,34 @@ const (
 type MsgId int32
 
 const (
-	MsgId_MSG_Default       MsgId = 0
-	MsgId_MSG_CS_Ping       MsgId = 1    // 心跳请求
-	MsgId_MSG_SC_Pong       MsgId = 2    // 心跳响应
-	MsgId_MSG_CS_Login      MsgId = 101  // 登录请求
-	MsgId_MSG_SC_Login      MsgId = 102  // 登录响应
-	MsgId_MSG_CS_Register   MsgId = 103  // 注册请求
-	MsgId_MSG_SC_Register   MsgId = 104  // 注册响应
-	MsgId_MSG_CS_HallInfo   MsgId = 111  // 大厅数据请求
-	MsgId_MSG_SC_HallInfo   MsgId = 112  // 大厅数据响应
-	MsgId_MSG_CS_CreateRoom MsgId = 121  // 创建房间请求
-	MsgId_MSG_SC_CreateRoom MsgId = 122  // 创建房间响应
-	MsgId_MSG_CS_JoinRoom   MsgId = 123  // 加入房间请求
-	MsgId_MSG_SC_JoinRoom   MsgId = 124  // 加入房间响应
-	MsgId_MSG_CS_MatchRoom  MsgId = 125  // 匹配房间请求
-	MsgId_MSG_SC_MatchRoom  MsgId = 126  // 匹配房间响应
-	MsgId_MSG_CS_ReadyNHWC  MsgId = 1001 // 你画我猜准备请求
-	MsgId_MSG_SC_ReadyNHWC  MsgId = 1002 // 你画我猜准备相应
-	MsgId_MSG_SC_StartNHWC  MsgId = 1004 // 你画我猜游戏开始
-	MsgId_MSG_CS_DrawNHWC   MsgId = 1005 // 绘画请求
-	MsgId_MSG_SC_DrawNHWC   MsgId = 1006 // 绘画响应
-	MsgId_MSG_SC_ResultNHWC MsgId = 1008 // 你画我猜游戏单轮游戏结束
-	MsgId_MSG_SC_OverNHWC   MsgId = 1010 // 你画我猜游戏结束
+	MsgId_MSG_Default          MsgId = 0
+	MsgId_MSG_CS_Ping          MsgId = 1    // 心跳请求
+	MsgId_MSG_SC_Pong          MsgId = 2    // 心跳响应
+	MsgId_MSG_CS_Login         MsgId = 101  // 登录请求
+	MsgId_MSG_SC_Login         MsgId = 102  // 登录响应
+	MsgId_MSG_CS_Register      MsgId = 103  // 注册请求
+	MsgId_MSG_SC_Register      MsgId = 104  // 注册响应
+	MsgId_MSG_CS_HallInfo      MsgId = 111  // 大厅数据请求
+	MsgId_MSG_SC_HallInfo      MsgId = 112  // 大厅数据响应
+	MsgId_MSG_CS_CreateRoom    MsgId = 121  // 创建房间请求
+	MsgId_MSG_SC_CreateRoom    MsgId = 122  // 创建房间响应
+	MsgId_MSG_CS_JoinRoom      MsgId = 123  // 加入房间请求
+	MsgId_MSG_SC_JoinRoom      MsgId = 124  // 加入房间响应
+	MsgId_MSG_CS_MatchRoom     MsgId = 125  // 匹配房间请求
+	MsgId_MSG_SC_MatchRoom     MsgId = 126  // 匹配房间响应
+	MsgId_MSG_CS_ReadyNHWC     MsgId = 1001 // 你画我猜准备请求
+	MsgId_MSG_SC_ReadyNHWC     MsgId = 1002 // 你画我猜准备相应
+	MsgId_MSG_SC_StartNHWC     MsgId = 1004 // 你画我猜游戏开始
+	MsgId_MSG_SC_ResultNHWC    MsgId = 1008 // 你画我猜游戏单轮游戏结束
+	MsgId_MSG_SC_OverNHWC      MsgId = 1010 // 你画我猜游戏结束
+	MsgId_MSG_CS_NHWCDrawClear MsgId = 1011 // 绘画清理请求
+	MsgId_MSG_SC_NHWCDrawClear MsgId = 1012 // 绘画清理响应
+	MsgId_MSG_CS_NHWCDrawWidth MsgId = 1013 // 绘画宽度请求
+	MsgId_MSG_SC_NHWCDrawWidth MsgId = 1014 // 绘画宽度响应
+	MsgId_MSG_CS_NHWCDrawColor MsgId = 1015 // 绘画颜色请求
+	MsgId_MSG_SC_NHWCDrawColor MsgId = 1016 // 绘画颜色响应
+	MsgId_MSG_CS_NHWCDrawPath  MsgId = 1017 // 绘画路径请求
+	MsgId_MSG_SC_NHWCDrawPath  MsgId = 1018 // 绘画路径响应
 )
 
 // Enum value maps for MsgId.
@@ -69,34 +75,46 @@ var (
 		1001: "MSG_CS_ReadyNHWC",
 		1002: "MSG_SC_ReadyNHWC",
 		1004: "MSG_SC_StartNHWC",
-		1005: "MSG_CS_DrawNHWC",
-		1006: "MSG_SC_DrawNHWC",
 		1008: "MSG_SC_ResultNHWC",
 		1010: "MSG_SC_OverNHWC",
+		1011: "MSG_CS_NHWCDrawClear",
+		1012: "MSG_SC_NHWCDrawClear",
+		1013: "MSG_CS_NHWCDrawWidth",
+		1014: "MSG_SC_NHWCDrawWidth",
+		1015: "MSG_CS_NHWCDrawColor",
+		1016: "MSG_SC_NHWCDrawColor",
+		1017: "MSG_CS_NHWCDrawPath",
+		1018: "MSG_SC_NHWCDrawPath",
 	}
 	MsgId_value = map[string]int32{
-		"MSG_Default":       0,
-		"MSG_CS_Ping":       1,
-		"MSG_SC_Pong":       2,
-		"MSG_CS_Login":      101,
-		"MSG_SC_Login":      102,
-		"MSG_CS_Register":   103,
-		"MSG_SC_Register":   104,
-		"MSG_CS_HallInfo":   111,
-		"MSG_SC_HallInfo":   112,
-		"MSG_CS_CreateRoom": 121,
-		"MSG_SC_CreateRoom": 122,
-		"MSG_CS_JoinRoom":   123,
-		"MSG_SC_JoinRoom":   124,
-		"MSG_CS_MatchRoom":  125,
-		"MSG_SC_MatchRoom":  126,
-		"MSG_CS_ReadyNHWC":  1001,
-		"MSG_SC_ReadyNHWC":  1002,
-		"MSG_SC_StartNHWC":  1004,
-		"MSG_CS_DrawNHWC":   1005,
-		"MSG_SC_DrawNHWC":   1006,
-		"MSG_SC_ResultNHWC": 1008,
-		"MSG_SC_OverNHWC":   1010,
+		"MSG_Default":          0,
+		"MSG_CS_Ping":          1,
+		"MSG_SC_Pong":          2,
+		"MSG_CS_Login":         101,
+		"MSG_SC_Login":         102,
+		"MSG_CS_Register":      103,
+		"MSG_SC_Register":      104,
+		"MSG_CS_HallInfo":      111,
+		"MSG_SC_HallInfo":      112,
+		"MSG_CS_CreateRoom":    121,
+		"MSG_SC_CreateRoom":    122,
+		"MSG_CS_JoinRoom":      123,
+		"MSG_SC_JoinRoom":      124,
+		"MSG_CS_MatchRoom":     125,
+		"MSG_SC_MatchRoom":     126,
+		"MSG_CS_ReadyNHWC":     1001,
+		"MSG_SC_ReadyNHWC":     1002,
+		"MSG_SC_StartNHWC":     1004,
+		"MSG_SC_ResultNHWC":    1008,
+		"MSG_SC_OverNHWC":      1010,
+		"MSG_CS_NHWCDrawClear": 1011,
+		"MSG_SC_NHWCDrawClear": 1012,
+		"MSG_CS_NHWCDrawWidth": 1013,
+		"MSG_SC_NHWCDrawWidth": 1014,
+		"MSG_CS_NHWCDrawColor": 1015,
+		"MSG_SC_NHWCDrawColor": 1016,
+		"MSG_CS_NHWCDrawPath":  1017,
+		"MSG_SC_NHWCDrawPath":  1018,
 	}
 )
 
@@ -1294,82 +1312,6 @@ func (x *SC_StartNHWC) GetRoomInfo() *RoomInfo {
 }
 
 // *
-// 游戏绘画请求
-type CS_DrawNHWC struct {
-	state         protoimpl.MessageState `protogen:"open.v1"`
-	unknownFields protoimpl.UnknownFields
-	sizeCache     protoimpl.SizeCache
-}
-
-func (x *CS_DrawNHWC) Reset() {
-	*x = CS_DrawNHWC{}
-	mi := &file_msg_proto_msgTypes[20]
-	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
-	ms.StoreMessageInfo(mi)
-}
-
-func (x *CS_DrawNHWC) String() string {
-	return protoimpl.X.MessageStringOf(x)
-}
-
-func (*CS_DrawNHWC) ProtoMessage() {}
-
-func (x *CS_DrawNHWC) ProtoReflect() protoreflect.Message {
-	mi := &file_msg_proto_msgTypes[20]
-	if x != nil {
-		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
-		if ms.LoadMessageInfo() == nil {
-			ms.StoreMessageInfo(mi)
-		}
-		return ms
-	}
-	return mi.MessageOf(x)
-}
-
-// Deprecated: Use CS_DrawNHWC.ProtoReflect.Descriptor instead.
-func (*CS_DrawNHWC) Descriptor() ([]byte, []int) {
-	return file_msg_proto_rawDescGZIP(), []int{20}
-}
-
-// *
-// 游戏绘画响应
-type SC_DrawNHWC struct {
-	state         protoimpl.MessageState `protogen:"open.v1"`
-	unknownFields protoimpl.UnknownFields
-	sizeCache     protoimpl.SizeCache
-}
-
-func (x *SC_DrawNHWC) Reset() {
-	*x = SC_DrawNHWC{}
-	mi := &file_msg_proto_msgTypes[21]
-	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
-	ms.StoreMessageInfo(mi)
-}
-
-func (x *SC_DrawNHWC) String() string {
-	return protoimpl.X.MessageStringOf(x)
-}
-
-func (*SC_DrawNHWC) ProtoMessage() {}
-
-func (x *SC_DrawNHWC) ProtoReflect() protoreflect.Message {
-	mi := &file_msg_proto_msgTypes[21]
-	if x != nil {
-		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
-		if ms.LoadMessageInfo() == nil {
-			ms.StoreMessageInfo(mi)
-		}
-		return ms
-	}
-	return mi.MessageOf(x)
-}
-
-// Deprecated: Use SC_DrawNHWC.ProtoReflect.Descriptor instead.
-func (*SC_DrawNHWC) Descriptor() ([]byte, []int) {
-	return file_msg_proto_rawDescGZIP(), []int{21}
-}
-
-// *
 // 小聚游戏结束
 type SC_ResultNHWC struct {
 	state         protoimpl.MessageState `protogen:"open.v1"`
@@ -1380,7 +1322,7 @@ type SC_ResultNHWC struct {
 
 func (x *SC_ResultNHWC) Reset() {
 	*x = SC_ResultNHWC{}
-	mi := &file_msg_proto_msgTypes[22]
+	mi := &file_msg_proto_msgTypes[20]
 	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 	ms.StoreMessageInfo(mi)
 }
@@ -1392,7 +1334,7 @@ func (x *SC_ResultNHWC) String() string {
 func (*SC_ResultNHWC) ProtoMessage() {}
 
 func (x *SC_ResultNHWC) ProtoReflect() protoreflect.Message {
-	mi := &file_msg_proto_msgTypes[22]
+	mi := &file_msg_proto_msgTypes[20]
 	if x != nil {
 		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 		if ms.LoadMessageInfo() == nil {
@@ -1405,7 +1347,7 @@ func (x *SC_ResultNHWC) ProtoReflect() protoreflect.Message {
 
 // Deprecated: Use SC_ResultNHWC.ProtoReflect.Descriptor instead.
 func (*SC_ResultNHWC) Descriptor() ([]byte, []int) {
-	return file_msg_proto_rawDescGZIP(), []int{22}
+	return file_msg_proto_rawDescGZIP(), []int{20}
 }
 
 func (x *SC_ResultNHWC) GetWord() string {
@@ -1426,7 +1368,7 @@ type SC_OverNHWC struct {
 
 func (x *SC_OverNHWC) Reset() {
 	*x = SC_OverNHWC{}
-	mi := &file_msg_proto_msgTypes[23]
+	mi := &file_msg_proto_msgTypes[21]
 	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 	ms.StoreMessageInfo(mi)
 }
@@ -1438,7 +1380,7 @@ func (x *SC_OverNHWC) String() string {
 func (*SC_OverNHWC) ProtoMessage() {}
 
 func (x *SC_OverNHWC) ProtoReflect() protoreflect.Message {
-	mi := &file_msg_proto_msgTypes[23]
+	mi := &file_msg_proto_msgTypes[21]
 	if x != nil {
 		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 		if ms.LoadMessageInfo() == nil {
@@ -1451,7 +1393,7 @@ func (x *SC_OverNHWC) ProtoReflect() protoreflect.Message {
 
 // Deprecated: Use SC_OverNHWC.ProtoReflect.Descriptor instead.
 func (*SC_OverNHWC) Descriptor() ([]byte, []int) {
-	return file_msg_proto_rawDescGZIP(), []int{23}
+	return file_msg_proto_rawDescGZIP(), []int{21}
 }
 
 func (x *SC_OverNHWC) GetWord() string {
@@ -1459,6 +1401,462 @@ func (x *SC_OverNHWC) GetWord() string {
 		return x.Word
 	}
 	return ""
+}
+
+// *
+// 游戏绘画清理请求
+type CS_NHWCDrawClear struct {
+	state         protoimpl.MessageState `protogen:"open.v1"`
+	unknownFields protoimpl.UnknownFields
+	sizeCache     protoimpl.SizeCache
+}
+
+func (x *CS_NHWCDrawClear) Reset() {
+	*x = CS_NHWCDrawClear{}
+	mi := &file_msg_proto_msgTypes[22]
+	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
+	ms.StoreMessageInfo(mi)
+}
+
+func (x *CS_NHWCDrawClear) String() string {
+	return protoimpl.X.MessageStringOf(x)
+}
+
+func (*CS_NHWCDrawClear) ProtoMessage() {}
+
+func (x *CS_NHWCDrawClear) ProtoReflect() protoreflect.Message {
+	mi := &file_msg_proto_msgTypes[22]
+	if x != nil {
+		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
+		if ms.LoadMessageInfo() == nil {
+			ms.StoreMessageInfo(mi)
+		}
+		return ms
+	}
+	return mi.MessageOf(x)
+}
+
+// Deprecated: Use CS_NHWCDrawClear.ProtoReflect.Descriptor instead.
+func (*CS_NHWCDrawClear) Descriptor() ([]byte, []int) {
+	return file_msg_proto_rawDescGZIP(), []int{22}
+}
+
+// *
+// 游戏绘画清理响应
+type SC_NHWCDrawClear struct {
+	state         protoimpl.MessageState `protogen:"open.v1"`
+	unknownFields protoimpl.UnknownFields
+	sizeCache     protoimpl.SizeCache
+}
+
+func (x *SC_NHWCDrawClear) Reset() {
+	*x = SC_NHWCDrawClear{}
+	mi := &file_msg_proto_msgTypes[23]
+	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
+	ms.StoreMessageInfo(mi)
+}
+
+func (x *SC_NHWCDrawClear) String() string {
+	return protoimpl.X.MessageStringOf(x)
+}
+
+func (*SC_NHWCDrawClear) ProtoMessage() {}
+
+func (x *SC_NHWCDrawClear) ProtoReflect() protoreflect.Message {
+	mi := &file_msg_proto_msgTypes[23]
+	if x != nil {
+		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
+		if ms.LoadMessageInfo() == nil {
+			ms.StoreMessageInfo(mi)
+		}
+		return ms
+	}
+	return mi.MessageOf(x)
+}
+
+// Deprecated: Use SC_NHWCDrawClear.ProtoReflect.Descriptor instead.
+func (*SC_NHWCDrawClear) Descriptor() ([]byte, []int) {
+	return file_msg_proto_rawDescGZIP(), []int{23}
+}
+
+// *
+// 游戏绘画width请求
+type CS_NHWCDrawWidth struct {
+	state         protoimpl.MessageState `protogen:"open.v1"`
+	Width         int32                  `protobuf:"varint,1,opt,name=width,proto3" json:"width,omitempty"`
+	unknownFields protoimpl.UnknownFields
+	sizeCache     protoimpl.SizeCache
+}
+
+func (x *CS_NHWCDrawWidth) Reset() {
+	*x = CS_NHWCDrawWidth{}
+	mi := &file_msg_proto_msgTypes[24]
+	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
+	ms.StoreMessageInfo(mi)
+}
+
+func (x *CS_NHWCDrawWidth) String() string {
+	return protoimpl.X.MessageStringOf(x)
+}
+
+func (*CS_NHWCDrawWidth) ProtoMessage() {}
+
+func (x *CS_NHWCDrawWidth) ProtoReflect() protoreflect.Message {
+	mi := &file_msg_proto_msgTypes[24]
+	if x != nil {
+		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
+		if ms.LoadMessageInfo() == nil {
+			ms.StoreMessageInfo(mi)
+		}
+		return ms
+	}
+	return mi.MessageOf(x)
+}
+
+// Deprecated: Use CS_NHWCDrawWidth.ProtoReflect.Descriptor instead.
+func (*CS_NHWCDrawWidth) Descriptor() ([]byte, []int) {
+	return file_msg_proto_rawDescGZIP(), []int{24}
+}
+
+func (x *CS_NHWCDrawWidth) GetWidth() int32 {
+	if x != nil {
+		return x.Width
+	}
+	return 0
+}
+
+// *
+// 游戏绘画width响应
+type SC_NHWCDrawWidth struct {
+	state         protoimpl.MessageState `protogen:"open.v1"`
+	Width         int32                  `protobuf:"varint,1,opt,name=width,proto3" json:"width,omitempty"`
+	unknownFields protoimpl.UnknownFields
+	sizeCache     protoimpl.SizeCache
+}
+
+func (x *SC_NHWCDrawWidth) Reset() {
+	*x = SC_NHWCDrawWidth{}
+	mi := &file_msg_proto_msgTypes[25]
+	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
+	ms.StoreMessageInfo(mi)
+}
+
+func (x *SC_NHWCDrawWidth) String() string {
+	return protoimpl.X.MessageStringOf(x)
+}
+
+func (*SC_NHWCDrawWidth) ProtoMessage() {}
+
+func (x *SC_NHWCDrawWidth) ProtoReflect() protoreflect.Message {
+	mi := &file_msg_proto_msgTypes[25]
+	if x != nil {
+		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
+		if ms.LoadMessageInfo() == nil {
+			ms.StoreMessageInfo(mi)
+		}
+		return ms
+	}
+	return mi.MessageOf(x)
+}
+
+// Deprecated: Use SC_NHWCDrawWidth.ProtoReflect.Descriptor instead.
+func (*SC_NHWCDrawWidth) Descriptor() ([]byte, []int) {
+	return file_msg_proto_rawDescGZIP(), []int{25}
+}
+
+func (x *SC_NHWCDrawWidth) GetWidth() int32 {
+	if x != nil {
+		return x.Width
+	}
+	return 0
+}
+
+// *
+// 游戏绘画color请求
+type CS_NHWCDrawColor struct {
+	state         protoimpl.MessageState `protogen:"open.v1"`
+	Color         string                 `protobuf:"bytes,1,opt,name=color,proto3" json:"color,omitempty"`
+	unknownFields protoimpl.UnknownFields
+	sizeCache     protoimpl.SizeCache
+}
+
+func (x *CS_NHWCDrawColor) Reset() {
+	*x = CS_NHWCDrawColor{}
+	mi := &file_msg_proto_msgTypes[26]
+	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
+	ms.StoreMessageInfo(mi)
+}
+
+func (x *CS_NHWCDrawColor) String() string {
+	return protoimpl.X.MessageStringOf(x)
+}
+
+func (*CS_NHWCDrawColor) ProtoMessage() {}
+
+func (x *CS_NHWCDrawColor) ProtoReflect() protoreflect.Message {
+	mi := &file_msg_proto_msgTypes[26]
+	if x != nil {
+		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
+		if ms.LoadMessageInfo() == nil {
+			ms.StoreMessageInfo(mi)
+		}
+		return ms
+	}
+	return mi.MessageOf(x)
+}
+
+// Deprecated: Use CS_NHWCDrawColor.ProtoReflect.Descriptor instead.
+func (*CS_NHWCDrawColor) Descriptor() ([]byte, []int) {
+	return file_msg_proto_rawDescGZIP(), []int{26}
+}
+
+func (x *CS_NHWCDrawColor) GetColor() string {
+	if x != nil {
+		return x.Color
+	}
+	return ""
+}
+
+// *
+// 游戏绘画color响应
+type SC_NHWCDrawColor struct {
+	state         protoimpl.MessageState `protogen:"open.v1"`
+	Color         string                 `protobuf:"bytes,1,opt,name=color,proto3" json:"color,omitempty"`
+	unknownFields protoimpl.UnknownFields
+	sizeCache     protoimpl.SizeCache
+}
+
+func (x *SC_NHWCDrawColor) Reset() {
+	*x = SC_NHWCDrawColor{}
+	mi := &file_msg_proto_msgTypes[27]
+	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
+	ms.StoreMessageInfo(mi)
+}
+
+func (x *SC_NHWCDrawColor) String() string {
+	return protoimpl.X.MessageStringOf(x)
+}
+
+func (*SC_NHWCDrawColor) ProtoMessage() {}
+
+func (x *SC_NHWCDrawColor) ProtoReflect() protoreflect.Message {
+	mi := &file_msg_proto_msgTypes[27]
+	if x != nil {
+		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
+		if ms.LoadMessageInfo() == nil {
+			ms.StoreMessageInfo(mi)
+		}
+		return ms
+	}
+	return mi.MessageOf(x)
+}
+
+// Deprecated: Use SC_NHWCDrawColor.ProtoReflect.Descriptor instead.
+func (*SC_NHWCDrawColor) Descriptor() ([]byte, []int) {
+	return file_msg_proto_rawDescGZIP(), []int{27}
+}
+
+func (x *SC_NHWCDrawColor) GetColor() string {
+	if x != nil {
+		return x.Color
+	}
+	return ""
+}
+
+type Vec2 struct {
+	state         protoimpl.MessageState `protogen:"open.v1"`
+	X             float32                `protobuf:"fixed32,1,opt,name=x,proto3" json:"x,omitempty"`
+	Y             float32                `protobuf:"fixed32,2,opt,name=y,proto3" json:"y,omitempty"`
+	unknownFields protoimpl.UnknownFields
+	sizeCache     protoimpl.SizeCache
+}
+
+func (x *Vec2) Reset() {
+	*x = Vec2{}
+	mi := &file_msg_proto_msgTypes[28]
+	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
+	ms.StoreMessageInfo(mi)
+}
+
+func (x *Vec2) String() string {
+	return protoimpl.X.MessageStringOf(x)
+}
+
+func (*Vec2) ProtoMessage() {}
+
+func (x *Vec2) ProtoReflect() protoreflect.Message {
+	mi := &file_msg_proto_msgTypes[28]
+	if x != nil {
+		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
+		if ms.LoadMessageInfo() == nil {
+			ms.StoreMessageInfo(mi)
+		}
+		return ms
+	}
+	return mi.MessageOf(x)
+}
+
+// Deprecated: Use Vec2.ProtoReflect.Descriptor instead.
+func (*Vec2) Descriptor() ([]byte, []int) {
+	return file_msg_proto_rawDescGZIP(), []int{28}
+}
+
+func (x *Vec2) GetX() float32 {
+	if x != nil {
+		return x.X
+	}
+	return 0
+}
+
+func (x *Vec2) GetY() float32 {
+	if x != nil {
+		return x.Y
+	}
+	return 0
+}
+
+type NHWCPoint struct {
+	state         protoimpl.MessageState `protogen:"open.v1"`
+	IsStart       bool                   `protobuf:"varint,1,opt,name=isStart,proto3" json:"isStart,omitempty"`
+	V2            *Vec2                  `protobuf:"bytes,2,opt,name=v2,proto3" json:"v2,omitempty"`
+	unknownFields protoimpl.UnknownFields
+	sizeCache     protoimpl.SizeCache
+}
+
+func (x *NHWCPoint) Reset() {
+	*x = NHWCPoint{}
+	mi := &file_msg_proto_msgTypes[29]
+	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
+	ms.StoreMessageInfo(mi)
+}
+
+func (x *NHWCPoint) String() string {
+	return protoimpl.X.MessageStringOf(x)
+}
+
+func (*NHWCPoint) ProtoMessage() {}
+
+func (x *NHWCPoint) ProtoReflect() protoreflect.Message {
+	mi := &file_msg_proto_msgTypes[29]
+	if x != nil {
+		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
+		if ms.LoadMessageInfo() == nil {
+			ms.StoreMessageInfo(mi)
+		}
+		return ms
+	}
+	return mi.MessageOf(x)
+}
+
+// Deprecated: Use NHWCPoint.ProtoReflect.Descriptor instead.
+func (*NHWCPoint) Descriptor() ([]byte, []int) {
+	return file_msg_proto_rawDescGZIP(), []int{29}
+}
+
+func (x *NHWCPoint) GetIsStart() bool {
+	if x != nil {
+		return x.IsStart
+	}
+	return false
+}
+
+func (x *NHWCPoint) GetV2() *Vec2 {
+	if x != nil {
+		return x.V2
+	}
+	return nil
+}
+
+// *
+// 游戏绘画path请求
+type CS_NHWCDrawPath struct {
+	state         protoimpl.MessageState `protogen:"open.v1"`
+	PointArr      []*NHWCPoint           `protobuf:"bytes,1,rep,name=pointArr,proto3" json:"pointArr,omitempty"`
+	unknownFields protoimpl.UnknownFields
+	sizeCache     protoimpl.SizeCache
+}
+
+func (x *CS_NHWCDrawPath) Reset() {
+	*x = CS_NHWCDrawPath{}
+	mi := &file_msg_proto_msgTypes[30]
+	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
+	ms.StoreMessageInfo(mi)
+}
+
+func (x *CS_NHWCDrawPath) String() string {
+	return protoimpl.X.MessageStringOf(x)
+}
+
+func (*CS_NHWCDrawPath) ProtoMessage() {}
+
+func (x *CS_NHWCDrawPath) ProtoReflect() protoreflect.Message {
+	mi := &file_msg_proto_msgTypes[30]
+	if x != nil {
+		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
+		if ms.LoadMessageInfo() == nil {
+			ms.StoreMessageInfo(mi)
+		}
+		return ms
+	}
+	return mi.MessageOf(x)
+}
+
+// Deprecated: Use CS_NHWCDrawPath.ProtoReflect.Descriptor instead.
+func (*CS_NHWCDrawPath) Descriptor() ([]byte, []int) {
+	return file_msg_proto_rawDescGZIP(), []int{30}
+}
+
+func (x *CS_NHWCDrawPath) GetPointArr() []*NHWCPoint {
+	if x != nil {
+		return x.PointArr
+	}
+	return nil
+}
+
+// *
+// 游戏绘画path响应
+type SC_NHWCDrawPath struct {
+	state         protoimpl.MessageState `protogen:"open.v1"`
+	PointArr      []*NHWCPoint           `protobuf:"bytes,1,rep,name=pointArr,proto3" json:"pointArr,omitempty"`
+	unknownFields protoimpl.UnknownFields
+	sizeCache     protoimpl.SizeCache
+}
+
+func (x *SC_NHWCDrawPath) Reset() {
+	*x = SC_NHWCDrawPath{}
+	mi := &file_msg_proto_msgTypes[31]
+	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
+	ms.StoreMessageInfo(mi)
+}
+
+func (x *SC_NHWCDrawPath) String() string {
+	return protoimpl.X.MessageStringOf(x)
+}
+
+func (*SC_NHWCDrawPath) ProtoMessage() {}
+
+func (x *SC_NHWCDrawPath) ProtoReflect() protoreflect.Message {
+	mi := &file_msg_proto_msgTypes[31]
+	if x != nil {
+		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
+		if ms.LoadMessageInfo() == nil {
+			ms.StoreMessageInfo(mi)
+		}
+		return ms
+	}
+	return mi.MessageOf(x)
+}
+
+// Deprecated: Use SC_NHWCDrawPath.ProtoReflect.Descriptor instead.
+func (*SC_NHWCDrawPath) Descriptor() ([]byte, []int) {
+	return file_msg_proto_rawDescGZIP(), []int{31}
+}
+
+func (x *SC_NHWCDrawPath) GetPointArr() []*NHWCPoint {
+	if x != nil {
+		return x.PointArr
+	}
+	return nil
 }
 
 var File_msg_proto protoreflect.FileDescriptor
@@ -1566,42 +1964,78 @@ var file_msg_proto_rawDesc = string([]byte{
 	0x74, 0x61, 0x72, 0x74, 0x4e, 0x48, 0x57, 0x43, 0x12, 0x29, 0x0a, 0x08, 0x72, 0x6f, 0x6f, 0x6d,
 	0x49, 0x6e, 0x66, 0x6f, 0x18, 0x01, 0x20, 0x01, 0x28, 0x0b, 0x32, 0x0d, 0x2e, 0x6d, 0x73, 0x67,
 	0x2e, 0x52, 0x6f, 0x6f, 0x6d, 0x49, 0x6e, 0x66, 0x6f, 0x52, 0x08, 0x72, 0x6f, 0x6f, 0x6d, 0x49,
-	0x6e, 0x66, 0x6f, 0x22, 0x0d, 0x0a, 0x0b, 0x43, 0x53, 0x5f, 0x44, 0x72, 0x61, 0x77, 0x4e, 0x48,
-	0x57, 0x43, 0x22, 0x0d, 0x0a, 0x0b, 0x53, 0x43, 0x5f, 0x44, 0x72, 0x61, 0x77, 0x4e, 0x48, 0x57,
-	0x43, 0x22, 0x23, 0x0a, 0x0d, 0x53, 0x43, 0x5f, 0x52, 0x65, 0x73, 0x75, 0x6c, 0x74, 0x4e, 0x48,
-	0x57, 0x43, 0x12, 0x12, 0x0a, 0x04, 0x77, 0x6f, 0x72, 0x64, 0x18, 0x01, 0x20, 0x01, 0x28, 0x09,
-	0x52, 0x04, 0x77, 0x6f, 0x72, 0x64, 0x22, 0x21, 0x0a, 0x0b, 0x53, 0x43, 0x5f, 0x4f, 0x76, 0x65,
-	0x72, 0x4e, 0x48, 0x57, 0x43, 0x12, 0x12, 0x0a, 0x04, 0x77, 0x6f, 0x72, 0x64, 0x18, 0x01, 0x20,
-	0x01, 0x28, 0x09, 0x52, 0x04, 0x77, 0x6f, 0x72, 0x64, 0x2a, 0xd5, 0x03, 0x0a, 0x05, 0x4d, 0x73,
-	0x67, 0x49, 0x64, 0x12, 0x0f, 0x0a, 0x0b, 0x4d, 0x53, 0x47, 0x5f, 0x44, 0x65, 0x66, 0x61, 0x75,
-	0x6c, 0x74, 0x10, 0x00, 0x12, 0x0f, 0x0a, 0x0b, 0x4d, 0x53, 0x47, 0x5f, 0x43, 0x53, 0x5f, 0x50,
-	0x69, 0x6e, 0x67, 0x10, 0x01, 0x12, 0x0f, 0x0a, 0x0b, 0x4d, 0x53, 0x47, 0x5f, 0x53, 0x43, 0x5f,
-	0x50, 0x6f, 0x6e, 0x67, 0x10, 0x02, 0x12, 0x10, 0x0a, 0x0c, 0x4d, 0x53, 0x47, 0x5f, 0x43, 0x53,
-	0x5f, 0x4c, 0x6f, 0x67, 0x69, 0x6e, 0x10, 0x65, 0x12, 0x10, 0x0a, 0x0c, 0x4d, 0x53, 0x47, 0x5f,
-	0x53, 0x43, 0x5f, 0x4c, 0x6f, 0x67, 0x69, 0x6e, 0x10, 0x66, 0x12, 0x13, 0x0a, 0x0f, 0x4d, 0x53,
-	0x47, 0x5f, 0x43, 0x53, 0x5f, 0x52, 0x65, 0x67, 0x69, 0x73, 0x74, 0x65, 0x72, 0x10, 0x67, 0x12,
-	0x13, 0x0a, 0x0f, 0x4d, 0x53, 0x47, 0x5f, 0x53, 0x43, 0x5f, 0x52, 0x65, 0x67, 0x69, 0x73, 0x74,
-	0x65, 0x72, 0x10, 0x68, 0x12, 0x13, 0x0a, 0x0f, 0x4d, 0x53, 0x47, 0x5f, 0x43, 0x53, 0x5f, 0x48,
-	0x61, 0x6c, 0x6c, 0x49, 0x6e, 0x66, 0x6f, 0x10, 0x6f, 0x12, 0x13, 0x0a, 0x0f, 0x4d, 0x53, 0x47,
-	0x5f, 0x53, 0x43, 0x5f, 0x48, 0x61, 0x6c, 0x6c, 0x49, 0x6e, 0x66, 0x6f, 0x10, 0x70, 0x12, 0x15,
-	0x0a, 0x11, 0x4d, 0x53, 0x47, 0x5f, 0x43, 0x53, 0x5f, 0x43, 0x72, 0x65, 0x61, 0x74, 0x65, 0x52,
-	0x6f, 0x6f, 0x6d, 0x10, 0x79, 0x12, 0x15, 0x0a, 0x11, 0x4d, 0x53, 0x47, 0x5f, 0x53, 0x43, 0x5f,
-	0x43, 0x72, 0x65, 0x61, 0x74, 0x65, 0x52, 0x6f, 0x6f, 0x6d, 0x10, 0x7a, 0x12, 0x13, 0x0a, 0x0f,
-	0x4d, 0x53, 0x47, 0x5f, 0x43, 0x53, 0x5f, 0x4a, 0x6f, 0x69, 0x6e, 0x52, 0x6f, 0x6f, 0x6d, 0x10,
-	0x7b, 0x12, 0x13, 0x0a, 0x0f, 0x4d, 0x53, 0x47, 0x5f, 0x53, 0x43, 0x5f, 0x4a, 0x6f, 0x69, 0x6e,
-	0x52, 0x6f, 0x6f, 0x6d, 0x10, 0x7c, 0x12, 0x14, 0x0a, 0x10, 0x4d, 0x53, 0x47, 0x5f, 0x43, 0x53,
-	0x5f, 0x4d, 0x61, 0x74, 0x63, 0x68, 0x52, 0x6f, 0x6f, 0x6d, 0x10, 0x7d, 0x12, 0x14, 0x0a, 0x10,
-	0x4d, 0x53, 0x47, 0x5f, 0x53, 0x43, 0x5f, 0x4d, 0x61, 0x74, 0x63, 0x68, 0x52, 0x6f, 0x6f, 0x6d,
-	0x10, 0x7e, 0x12, 0x15, 0x0a, 0x10, 0x4d, 0x53, 0x47, 0x5f, 0x43, 0x53, 0x5f, 0x52, 0x65, 0x61,
-	0x64, 0x79, 0x4e, 0x48, 0x57, 0x43, 0x10, 0xe9, 0x07, 0x12, 0x15, 0x0a, 0x10, 0x4d, 0x53, 0x47,
-	0x5f, 0x53, 0x43, 0x5f, 0x52, 0x65, 0x61, 0x64, 0x79, 0x4e, 0x48, 0x57, 0x43, 0x10, 0xea, 0x07,
-	0x12, 0x15, 0x0a, 0x10, 0x4d, 0x53, 0x47, 0x5f, 0x53, 0x43, 0x5f, 0x53, 0x74, 0x61, 0x72, 0x74,
-	0x4e, 0x48, 0x57, 0x43, 0x10, 0xec, 0x07, 0x12, 0x14, 0x0a, 0x0f, 0x4d, 0x53, 0x47, 0x5f, 0x43,
-	0x53, 0x5f, 0x44, 0x72, 0x61, 0x77, 0x4e, 0x48, 0x57, 0x43, 0x10, 0xed, 0x07, 0x12, 0x14, 0x0a,
-	0x0f, 0x4d, 0x53, 0x47, 0x5f, 0x53, 0x43, 0x5f, 0x44, 0x72, 0x61, 0x77, 0x4e, 0x48, 0x57, 0x43,
-	0x10, 0xee, 0x07, 0x12, 0x16, 0x0a, 0x11, 0x4d, 0x53, 0x47, 0x5f, 0x53, 0x43, 0x5f, 0x52, 0x65,
-	0x73, 0x75, 0x6c, 0x74, 0x4e, 0x48, 0x57, 0x43, 0x10, 0xf0, 0x07, 0x12, 0x14, 0x0a, 0x0f, 0x4d,
-	0x53, 0x47, 0x5f, 0x53, 0x43, 0x5f, 0x4f, 0x76, 0x65, 0x72, 0x4e, 0x48, 0x57, 0x43, 0x10, 0xf2,
+	0x6e, 0x66, 0x6f, 0x22, 0x23, 0x0a, 0x0d, 0x53, 0x43, 0x5f, 0x52, 0x65, 0x73, 0x75, 0x6c, 0x74,
+	0x4e, 0x48, 0x57, 0x43, 0x12, 0x12, 0x0a, 0x04, 0x77, 0x6f, 0x72, 0x64, 0x18, 0x01, 0x20, 0x01,
+	0x28, 0x09, 0x52, 0x04, 0x77, 0x6f, 0x72, 0x64, 0x22, 0x21, 0x0a, 0x0b, 0x53, 0x43, 0x5f, 0x4f,
+	0x76, 0x65, 0x72, 0x4e, 0x48, 0x57, 0x43, 0x12, 0x12, 0x0a, 0x04, 0x77, 0x6f, 0x72, 0x64, 0x18,
+	0x01, 0x20, 0x01, 0x28, 0x09, 0x52, 0x04, 0x77, 0x6f, 0x72, 0x64, 0x22, 0x12, 0x0a, 0x10, 0x43,
+	0x53, 0x5f, 0x4e, 0x48, 0x57, 0x43, 0x44, 0x72, 0x61, 0x77, 0x43, 0x6c, 0x65, 0x61, 0x72, 0x22,
+	0x12, 0x0a, 0x10, 0x53, 0x43, 0x5f, 0x4e, 0x48, 0x57, 0x43, 0x44, 0x72, 0x61, 0x77, 0x43, 0x6c,
+	0x65, 0x61, 0x72, 0x22, 0x28, 0x0a, 0x10, 0x43, 0x53, 0x5f, 0x4e, 0x48, 0x57, 0x43, 0x44, 0x72,
+	0x61, 0x77, 0x57, 0x69, 0x64, 0x74, 0x68, 0x12, 0x14, 0x0a, 0x05, 0x77, 0x69, 0x64, 0x74, 0x68,
+	0x18, 0x01, 0x20, 0x01, 0x28, 0x05, 0x52, 0x05, 0x77, 0x69, 0x64, 0x74, 0x68, 0x22, 0x28, 0x0a,
+	0x10, 0x53, 0x43, 0x5f, 0x4e, 0x48, 0x57, 0x43, 0x44, 0x72, 0x61, 0x77, 0x57, 0x69, 0x64, 0x74,
+	0x68, 0x12, 0x14, 0x0a, 0x05, 0x77, 0x69, 0x64, 0x74, 0x68, 0x18, 0x01, 0x20, 0x01, 0x28, 0x05,
+	0x52, 0x05, 0x77, 0x69, 0x64, 0x74, 0x68, 0x22, 0x28, 0x0a, 0x10, 0x43, 0x53, 0x5f, 0x4e, 0x48,
+	0x57, 0x43, 0x44, 0x72, 0x61, 0x77, 0x43, 0x6f, 0x6c, 0x6f, 0x72, 0x12, 0x14, 0x0a, 0x05, 0x63,
+	0x6f, 0x6c, 0x6f, 0x72, 0x18, 0x01, 0x20, 0x01, 0x28, 0x09, 0x52, 0x05, 0x63, 0x6f, 0x6c, 0x6f,
+	0x72, 0x22, 0x28, 0x0a, 0x10, 0x53, 0x43, 0x5f, 0x4e, 0x48, 0x57, 0x43, 0x44, 0x72, 0x61, 0x77,
+	0x43, 0x6f, 0x6c, 0x6f, 0x72, 0x12, 0x14, 0x0a, 0x05, 0x63, 0x6f, 0x6c, 0x6f, 0x72, 0x18, 0x01,
+	0x20, 0x01, 0x28, 0x09, 0x52, 0x05, 0x63, 0x6f, 0x6c, 0x6f, 0x72, 0x22, 0x22, 0x0a, 0x04, 0x56,
+	0x65, 0x63, 0x32, 0x12, 0x0c, 0x0a, 0x01, 0x78, 0x18, 0x01, 0x20, 0x01, 0x28, 0x02, 0x52, 0x01,
+	0x78, 0x12, 0x0c, 0x0a, 0x01, 0x79, 0x18, 0x02, 0x20, 0x01, 0x28, 0x02, 0x52, 0x01, 0x79, 0x22,
+	0x40, 0x0a, 0x09, 0x4e, 0x48, 0x57, 0x43, 0x50, 0x6f, 0x69, 0x6e, 0x74, 0x12, 0x18, 0x0a, 0x07,
+	0x69, 0x73, 0x53, 0x74, 0x61, 0x72, 0x74, 0x18, 0x01, 0x20, 0x01, 0x28, 0x08, 0x52, 0x07, 0x69,
+	0x73, 0x53, 0x74, 0x61, 0x72, 0x74, 0x12, 0x19, 0x0a, 0x02, 0x76, 0x32, 0x18, 0x02, 0x20, 0x01,
+	0x28, 0x0b, 0x32, 0x09, 0x2e, 0x6d, 0x73, 0x67, 0x2e, 0x56, 0x65, 0x63, 0x32, 0x52, 0x02, 0x76,
+	0x32, 0x22, 0x3d, 0x0a, 0x0f, 0x43, 0x53, 0x5f, 0x4e, 0x48, 0x57, 0x43, 0x44, 0x72, 0x61, 0x77,
+	0x50, 0x61, 0x74, 0x68, 0x12, 0x2a, 0x0a, 0x08, 0x70, 0x6f, 0x69, 0x6e, 0x74, 0x41, 0x72, 0x72,
+	0x18, 0x01, 0x20, 0x03, 0x28, 0x0b, 0x32, 0x0e, 0x2e, 0x6d, 0x73, 0x67, 0x2e, 0x4e, 0x48, 0x57,
+	0x43, 0x50, 0x6f, 0x69, 0x6e, 0x74, 0x52, 0x08, 0x70, 0x6f, 0x69, 0x6e, 0x74, 0x41, 0x72, 0x72,
+	0x22, 0x3d, 0x0a, 0x0f, 0x53, 0x43, 0x5f, 0x4e, 0x48, 0x57, 0x43, 0x44, 0x72, 0x61, 0x77, 0x50,
+	0x61, 0x74, 0x68, 0x12, 0x2a, 0x0a, 0x08, 0x70, 0x6f, 0x69, 0x6e, 0x74, 0x41, 0x72, 0x72, 0x18,
+	0x01, 0x20, 0x03, 0x28, 0x0b, 0x32, 0x0e, 0x2e, 0x6d, 0x73, 0x67, 0x2e, 0x4e, 0x48, 0x57, 0x43,
+	0x50, 0x6f, 0x69, 0x6e, 0x74, 0x52, 0x08, 0x70, 0x6f, 0x69, 0x6e, 0x74, 0x41, 0x72, 0x72, 0x2a,
+	0xff, 0x04, 0x0a, 0x05, 0x4d, 0x73, 0x67, 0x49, 0x64, 0x12, 0x0f, 0x0a, 0x0b, 0x4d, 0x53, 0x47,
+	0x5f, 0x44, 0x65, 0x66, 0x61, 0x75, 0x6c, 0x74, 0x10, 0x00, 0x12, 0x0f, 0x0a, 0x0b, 0x4d, 0x53,
+	0x47, 0x5f, 0x43, 0x53, 0x5f, 0x50, 0x69, 0x6e, 0x67, 0x10, 0x01, 0x12, 0x0f, 0x0a, 0x0b, 0x4d,
+	0x53, 0x47, 0x5f, 0x53, 0x43, 0x5f, 0x50, 0x6f, 0x6e, 0x67, 0x10, 0x02, 0x12, 0x10, 0x0a, 0x0c,
+	0x4d, 0x53, 0x47, 0x5f, 0x43, 0x53, 0x5f, 0x4c, 0x6f, 0x67, 0x69, 0x6e, 0x10, 0x65, 0x12, 0x10,
+	0x0a, 0x0c, 0x4d, 0x53, 0x47, 0x5f, 0x53, 0x43, 0x5f, 0x4c, 0x6f, 0x67, 0x69, 0x6e, 0x10, 0x66,
+	0x12, 0x13, 0x0a, 0x0f, 0x4d, 0x53, 0x47, 0x5f, 0x43, 0x53, 0x5f, 0x52, 0x65, 0x67, 0x69, 0x73,
+	0x74, 0x65, 0x72, 0x10, 0x67, 0x12, 0x13, 0x0a, 0x0f, 0x4d, 0x53, 0x47, 0x5f, 0x53, 0x43, 0x5f,
+	0x52, 0x65, 0x67, 0x69, 0x73, 0x74, 0x65, 0x72, 0x10, 0x68, 0x12, 0x13, 0x0a, 0x0f, 0x4d, 0x53,
+	0x47, 0x5f, 0x43, 0x53, 0x5f, 0x48, 0x61, 0x6c, 0x6c, 0x49, 0x6e, 0x66, 0x6f, 0x10, 0x6f, 0x12,
+	0x13, 0x0a, 0x0f, 0x4d, 0x53, 0x47, 0x5f, 0x53, 0x43, 0x5f, 0x48, 0x61, 0x6c, 0x6c, 0x49, 0x6e,
+	0x66, 0x6f, 0x10, 0x70, 0x12, 0x15, 0x0a, 0x11, 0x4d, 0x53, 0x47, 0x5f, 0x43, 0x53, 0x5f, 0x43,
+	0x72, 0x65, 0x61, 0x74, 0x65, 0x52, 0x6f, 0x6f, 0x6d, 0x10, 0x79, 0x12, 0x15, 0x0a, 0x11, 0x4d,
+	0x53, 0x47, 0x5f, 0x53, 0x43, 0x5f, 0x43, 0x72, 0x65, 0x61, 0x74, 0x65, 0x52, 0x6f, 0x6f, 0x6d,
+	0x10, 0x7a, 0x12, 0x13, 0x0a, 0x0f, 0x4d, 0x53, 0x47, 0x5f, 0x43, 0x53, 0x5f, 0x4a, 0x6f, 0x69,
+	0x6e, 0x52, 0x6f, 0x6f, 0x6d, 0x10, 0x7b, 0x12, 0x13, 0x0a, 0x0f, 0x4d, 0x53, 0x47, 0x5f, 0x53,
+	0x43, 0x5f, 0x4a, 0x6f, 0x69, 0x6e, 0x52, 0x6f, 0x6f, 0x6d, 0x10, 0x7c, 0x12, 0x14, 0x0a, 0x10,
+	0x4d, 0x53, 0x47, 0x5f, 0x43, 0x53, 0x5f, 0x4d, 0x61, 0x74, 0x63, 0x68, 0x52, 0x6f, 0x6f, 0x6d,
+	0x10, 0x7d, 0x12, 0x14, 0x0a, 0x10, 0x4d, 0x53, 0x47, 0x5f, 0x53, 0x43, 0x5f, 0x4d, 0x61, 0x74,
+	0x63, 0x68, 0x52, 0x6f, 0x6f, 0x6d, 0x10, 0x7e, 0x12, 0x15, 0x0a, 0x10, 0x4d, 0x53, 0x47, 0x5f,
+	0x43, 0x53, 0x5f, 0x52, 0x65, 0x61, 0x64, 0x79, 0x4e, 0x48, 0x57, 0x43, 0x10, 0xe9, 0x07, 0x12,
+	0x15, 0x0a, 0x10, 0x4d, 0x53, 0x47, 0x5f, 0x53, 0x43, 0x5f, 0x52, 0x65, 0x61, 0x64, 0x79, 0x4e,
+	0x48, 0x57, 0x43, 0x10, 0xea, 0x07, 0x12, 0x15, 0x0a, 0x10, 0x4d, 0x53, 0x47, 0x5f, 0x53, 0x43,
+	0x5f, 0x53, 0x74, 0x61, 0x72, 0x74, 0x4e, 0x48, 0x57, 0x43, 0x10, 0xec, 0x07, 0x12, 0x16, 0x0a,
+	0x11, 0x4d, 0x53, 0x47, 0x5f, 0x53, 0x43, 0x5f, 0x52, 0x65, 0x73, 0x75, 0x6c, 0x74, 0x4e, 0x48,
+	0x57, 0x43, 0x10, 0xf0, 0x07, 0x12, 0x14, 0x0a, 0x0f, 0x4d, 0x53, 0x47, 0x5f, 0x53, 0x43, 0x5f,
+	0x4f, 0x76, 0x65, 0x72, 0x4e, 0x48, 0x57, 0x43, 0x10, 0xf2, 0x07, 0x12, 0x19, 0x0a, 0x14, 0x4d,
+	0x53, 0x47, 0x5f, 0x43, 0x53, 0x5f, 0x4e, 0x48, 0x57, 0x43, 0x44, 0x72, 0x61, 0x77, 0x43, 0x6c,
+	0x65, 0x61, 0x72, 0x10, 0xf3, 0x07, 0x12, 0x19, 0x0a, 0x14, 0x4d, 0x53, 0x47, 0x5f, 0x53, 0x43,
+	0x5f, 0x4e, 0x48, 0x57, 0x43, 0x44, 0x72, 0x61, 0x77, 0x43, 0x6c, 0x65, 0x61, 0x72, 0x10, 0xf4,
+	0x07, 0x12, 0x19, 0x0a, 0x14, 0x4d, 0x53, 0x47, 0x5f, 0x43, 0x53, 0x5f, 0x4e, 0x48, 0x57, 0x43,
+	0x44, 0x72, 0x61, 0x77, 0x57, 0x69, 0x64, 0x74, 0x68, 0x10, 0xf5, 0x07, 0x12, 0x19, 0x0a, 0x14,
+	0x4d, 0x53, 0x47, 0x5f, 0x53, 0x43, 0x5f, 0x4e, 0x48, 0x57, 0x43, 0x44, 0x72, 0x61, 0x77, 0x57,
+	0x69, 0x64, 0x74, 0x68, 0x10, 0xf6, 0x07, 0x12, 0x19, 0x0a, 0x14, 0x4d, 0x53, 0x47, 0x5f, 0x43,
+	0x53, 0x5f, 0x4e, 0x48, 0x57, 0x43, 0x44, 0x72, 0x61, 0x77, 0x43, 0x6f, 0x6c, 0x6f, 0x72, 0x10,
+	0xf7, 0x07, 0x12, 0x19, 0x0a, 0x14, 0x4d, 0x53, 0x47, 0x5f, 0x53, 0x43, 0x5f, 0x4e, 0x48, 0x57,
+	0x43, 0x44, 0x72, 0x61, 0x77, 0x43, 0x6f, 0x6c, 0x6f, 0x72, 0x10, 0xf8, 0x07, 0x12, 0x18, 0x0a,
+	0x13, 0x4d, 0x53, 0x47, 0x5f, 0x43, 0x53, 0x5f, 0x4e, 0x48, 0x57, 0x43, 0x44, 0x72, 0x61, 0x77,
+	0x50, 0x61, 0x74, 0x68, 0x10, 0xf9, 0x07, 0x12, 0x18, 0x0a, 0x13, 0x4d, 0x53, 0x47, 0x5f, 0x53,
+	0x43, 0x5f, 0x4e, 0x48, 0x57, 0x43, 0x44, 0x72, 0x61, 0x77, 0x50, 0x61, 0x74, 0x68, 0x10, 0xfa,
 	0x07, 0x2a, 0x40, 0x0a, 0x09, 0x52, 0x6f, 0x6f, 0x6d, 0x53, 0x74, 0x61, 0x74, 0x65, 0x12, 0x08,
 	0x0a, 0x04, 0x4e, 0x6f, 0x6e, 0x65, 0x10, 0x00, 0x12, 0x09, 0x0a, 0x05, 0x52, 0x65, 0x61, 0x64,
 	0x79, 0x10, 0x01, 0x12, 0x08, 0x0a, 0x04, 0x44, 0x72, 0x61, 0x77, 0x10, 0x02, 0x12, 0x0a, 0x0a,
@@ -1623,38 +2057,46 @@ func file_msg_proto_rawDescGZIP() []byte {
 }
 
 var file_msg_proto_enumTypes = make([]protoimpl.EnumInfo, 2)
-var file_msg_proto_msgTypes = make([]protoimpl.MessageInfo, 25)
+var file_msg_proto_msgTypes = make([]protoimpl.MessageInfo, 33)
 var file_msg_proto_goTypes = []any{
-	(MsgId)(0),            // 0: msg.MsgId
-	(RoomState)(0),        // 1: msg.RoomState
-	(*CS_Ping)(nil),       // 2: msg.CS_Ping
-	(*SC_Pong)(nil),       // 3: msg.SC_Pong
-	(*PlayerInfo)(nil),    // 4: msg.PlayerInfo
-	(*RoomInfo)(nil),      // 5: msg.RoomInfo
-	(*GameUserItem)(nil),  // 6: msg.GameUserItem
-	(*CS_Login)(nil),      // 7: msg.CS_Login
-	(*SC_Login)(nil),      // 8: msg.SC_Login
-	(*CS_Register)(nil),   // 9: msg.CS_Register
-	(*SC_Register)(nil),   // 10: msg.SC_Register
-	(*CS_HallInfo)(nil),   // 11: msg.CS_HallInfo
-	(*SC_HallInfo)(nil),   // 12: msg.SC_HallInfo
-	(*CS_CreateRoom)(nil), // 13: msg.CS_CreateRoom
-	(*SC_CreateRoom)(nil), // 14: msg.SC_CreateRoom
-	(*CS_JoinRoom)(nil),   // 15: msg.CS_JoinRoom
-	(*SC_JoinRoom)(nil),   // 16: msg.SC_JoinRoom
-	(*CS_MatchRoom)(nil),  // 17: msg.CS_MatchRoom
-	(*SC_MatchRoom)(nil),  // 18: msg.SC_MatchRoom
-	(*CS_ReadyNHWC)(nil),  // 19: msg.CS_ReadyNHWC
-	(*SC_ReadyNHWC)(nil),  // 20: msg.SC_ReadyNHWC
-	(*SC_StartNHWC)(nil),  // 21: msg.SC_StartNHWC
-	(*CS_DrawNHWC)(nil),   // 22: msg.CS_DrawNHWC
-	(*SC_DrawNHWC)(nil),   // 23: msg.SC_DrawNHWC
-	(*SC_ResultNHWC)(nil), // 24: msg.SC_ResultNHWC
-	(*SC_OverNHWC)(nil),   // 25: msg.SC_OverNHWC
-	nil,                   // 26: msg.RoomInfo.MapPlayerInfoEntry
+	(MsgId)(0),               // 0: msg.MsgId
+	(RoomState)(0),           // 1: msg.RoomState
+	(*CS_Ping)(nil),          // 2: msg.CS_Ping
+	(*SC_Pong)(nil),          // 3: msg.SC_Pong
+	(*PlayerInfo)(nil),       // 4: msg.PlayerInfo
+	(*RoomInfo)(nil),         // 5: msg.RoomInfo
+	(*GameUserItem)(nil),     // 6: msg.GameUserItem
+	(*CS_Login)(nil),         // 7: msg.CS_Login
+	(*SC_Login)(nil),         // 8: msg.SC_Login
+	(*CS_Register)(nil),      // 9: msg.CS_Register
+	(*SC_Register)(nil),      // 10: msg.SC_Register
+	(*CS_HallInfo)(nil),      // 11: msg.CS_HallInfo
+	(*SC_HallInfo)(nil),      // 12: msg.SC_HallInfo
+	(*CS_CreateRoom)(nil),    // 13: msg.CS_CreateRoom
+	(*SC_CreateRoom)(nil),    // 14: msg.SC_CreateRoom
+	(*CS_JoinRoom)(nil),      // 15: msg.CS_JoinRoom
+	(*SC_JoinRoom)(nil),      // 16: msg.SC_JoinRoom
+	(*CS_MatchRoom)(nil),     // 17: msg.CS_MatchRoom
+	(*SC_MatchRoom)(nil),     // 18: msg.SC_MatchRoom
+	(*CS_ReadyNHWC)(nil),     // 19: msg.CS_ReadyNHWC
+	(*SC_ReadyNHWC)(nil),     // 20: msg.SC_ReadyNHWC
+	(*SC_StartNHWC)(nil),     // 21: msg.SC_StartNHWC
+	(*SC_ResultNHWC)(nil),    // 22: msg.SC_ResultNHWC
+	(*SC_OverNHWC)(nil),      // 23: msg.SC_OverNHWC
+	(*CS_NHWCDrawClear)(nil), // 24: msg.CS_NHWCDrawClear
+	(*SC_NHWCDrawClear)(nil), // 25: msg.SC_NHWCDrawClear
+	(*CS_NHWCDrawWidth)(nil), // 26: msg.CS_NHWCDrawWidth
+	(*SC_NHWCDrawWidth)(nil), // 27: msg.SC_NHWCDrawWidth
+	(*CS_NHWCDrawColor)(nil), // 28: msg.CS_NHWCDrawColor
+	(*SC_NHWCDrawColor)(nil), // 29: msg.SC_NHWCDrawColor
+	(*Vec2)(nil),             // 30: msg.Vec2
+	(*NHWCPoint)(nil),        // 31: msg.NHWCPoint
+	(*CS_NHWCDrawPath)(nil),  // 32: msg.CS_NHWCDrawPath
+	(*SC_NHWCDrawPath)(nil),  // 33: msg.SC_NHWCDrawPath
+	nil,                      // 34: msg.RoomInfo.MapPlayerInfoEntry
 }
 var file_msg_proto_depIdxs = []int32{
-	26, // 0: msg.RoomInfo.mapPlayerInfo:type_name -> msg.RoomInfo.MapPlayerInfoEntry
+	34, // 0: msg.RoomInfo.mapPlayerInfo:type_name -> msg.RoomInfo.MapPlayerInfoEntry
 	4,  // 1: msg.GameUserItem.plyer:type_name -> msg.PlayerInfo
 	4,  // 2: msg.SC_Login.PlayerInfo:type_name -> msg.PlayerInfo
 	5,  // 3: msg.SC_HallInfo.roomArr:type_name -> msg.RoomInfo
@@ -1663,12 +2105,15 @@ var file_msg_proto_depIdxs = []int32{
 	5,  // 6: msg.SC_MatchRoom.roomInfo:type_name -> msg.RoomInfo
 	5,  // 7: msg.SC_ReadyNHWC.roomInfo:type_name -> msg.RoomInfo
 	5,  // 8: msg.SC_StartNHWC.roomInfo:type_name -> msg.RoomInfo
-	6,  // 9: msg.RoomInfo.MapPlayerInfoEntry.value:type_name -> msg.GameUserItem
-	10, // [10:10] is the sub-list for method output_type
-	10, // [10:10] is the sub-list for method input_type
-	10, // [10:10] is the sub-list for extension type_name
-	10, // [10:10] is the sub-list for extension extendee
-	0,  // [0:10] is the sub-list for field type_name
+	30, // 9: msg.NHWCPoint.v2:type_name -> msg.Vec2
+	31, // 10: msg.CS_NHWCDrawPath.pointArr:type_name -> msg.NHWCPoint
+	31, // 11: msg.SC_NHWCDrawPath.pointArr:type_name -> msg.NHWCPoint
+	6,  // 12: msg.RoomInfo.MapPlayerInfoEntry.value:type_name -> msg.GameUserItem
+	13, // [13:13] is the sub-list for method output_type
+	13, // [13:13] is the sub-list for method input_type
+	13, // [13:13] is the sub-list for extension type_name
+	13, // [13:13] is the sub-list for extension extendee
+	0,  // [0:13] is the sub-list for field type_name
 }
 
 func init() { file_msg_proto_init() }
@@ -1682,7 +2127,7 @@ func file_msg_proto_init() {
 			GoPackagePath: reflect.TypeOf(x{}).PkgPath(),
 			RawDescriptor: unsafe.Slice(unsafe.StringData(file_msg_proto_rawDesc), len(file_msg_proto_rawDesc)),
 			NumEnums:      2,
-			NumMessages:   25,
+			NumMessages:   33,
 			NumExtensions: 0,
 			NumServices:   0,
 		},
