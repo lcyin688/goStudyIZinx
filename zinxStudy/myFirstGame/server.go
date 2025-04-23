@@ -40,7 +40,7 @@ func initAddRouter(s ziface.IServer) {
 	s.AddRouter(uint32(msg.MsgId_MSG_CS_MatchRoom), &s_router.RouterMatchRoom{})
 
 	//你画我猜准备
-	s.AddRouter(uint32(msg.MsgId_MSG_CS_ReadyNHWC), &s_router.RouterReady{})
+	s.AddRouter(uint32(msg.MsgId_MSG_CS_NHWCReady), &s_router.RouterReady{})
 
 	//你画我猜清理
 	s.AddRouter(uint32(msg.MsgId_MSG_CS_NHWCDrawClear), &s_router.RouterDrawClear{})

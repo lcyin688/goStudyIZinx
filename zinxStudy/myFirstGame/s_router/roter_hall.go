@@ -109,7 +109,9 @@ func (t *RouterMatchRoom) Handle(req ziface.IRequest) {
 		fmt.Println("Position Unmarshal error ", err, " data = ", req.GetData())
 		return
 	}
-	code, roomItem := playerData.MathchRoom(req.GetConnection())
+	account := ClientsMapCon[req.GetConnection()].Account
+	pUser := playerData.GetPUser(account)
+	code, roomItem := playerData.MathchRoom(req.GetConnection(), pUser)
 	data := &msg.SC_CreateRoom{
 		Code:     code,
 		RoomInfo: roomItem,
@@ -123,7 +125,7 @@ type RouterReady struct {
 }
 
 func (t *RouterReady) Handle(req ziface.IRequest) {
-	msgTemp := &msg.SC_ReadyNHWC{}
+	msgTemp := &msg.SC_NHWCReady{}
 	err := proto.Unmarshal(req.GetData(), msgTemp)
 	if err != nil {
 		fmt.Println("Position Unmarshal error ", err, " data = ", req.GetData())
@@ -133,7 +135,7 @@ func (t *RouterReady) Handle(req ziface.IRequest) {
 }
 
 // 客户端请求准备
-func onReady(req ziface.IConnection, msgTemp *msg.SC_ReadyNHWC) {
+func onReady(req ziface.IConnection, msgTemp *msg.SC_NHWCReady) {
 	account := ClientsMapCon[req].Account
 
 	pUser := playerData.GetPUser(account)
@@ -142,18 +144,18 @@ func onReady(req ziface.IConnection, msgTemp *msg.SC_ReadyNHWC) {
 	roomInfo, _ := playerData.GetPRoom(rid)
 	if pUser.IsReady {
 		// 	fmt.Println("用户已经准备")
-		data := &msg.SC_ReadyNHWC{
+		data := &msg.SC_NHWCReady{
 			Code:     int32(enumeCode.PlayerReadyed),
 			RoomInfo: roomInfo,
 		}
-		SendMsg(uint32(msg.MsgId_MSG_SC_ReadyNHWC), data, req)
+		SendMsg(uint32(msg.MsgId_MSG_SC_NHWCReady), data, req)
 	} else {
 		pUser.IsReady = true
-		data := &msg.SC_ReadyNHWC{
+		data := &msg.SC_NHWCReady{
 			Code:     int32(enumeCode.OK),
 			RoomInfo: roomInfo,
 		}
-		BroadCast(0, uint32(msg.MsgId_MSG_SC_ReadyNHWC), data, "")
+		BroadCast(0, uint32(msg.MsgId_MSG_SC_NHWCReady), data, "")
 		if CanStartGame(pUser.Rid) {
 			StartGame(pUser.Rid)
 		}
@@ -167,7 +169,7 @@ func onReady(req ziface.IConnection, msgTemp *msg.SC_ReadyNHWC) {
 func CanStartGame(rid int32) bool {
 	seatSum := 0
 	readySum := 0
-	seatMap := playerData.RoomMap[rid].MapPlayerInfo
+	seatMap := playerData.RoomMap[rid].ArrPlayerInfo
 	for _, seat := range seatMap {
 		if seat != nil {
 			seatSum++
@@ -194,15 +196,15 @@ func StartGame(rid int32) {
 	pRoom.Hint = playerData.WordsList[pRoom.WordIndex].D
 	pRoom.State = int32(msg.RoomState_Draw)
 	pRoom.GameNum++
-	pRoom.StartTime = time.Now().Unix()
+	pRoom.GameTime = time.Now().Unix()
 	timer := time.NewTimer(time.Second * time.Duration(3))
-	pUser := pRoom.MapPlayerInfo[pRoom.Painter]
+	pUser := getUserBySeat(pRoom, pRoom.Painter)
 
 	pUser.IsReady = true
-	data := &msg.SC_StartNHWC{
+	data := &msg.SC_NHWCStart{
 		RoomInfo: pRoom,
 	}
-	BroadCast(rid, uint32(msg.MsgId_MSG_SC_StartNHWC), data, "")
+	BroadCast(rid, uint32(msg.MsgId_MSG_SC_NHWCStart), data, "")
 
 	go func() {
 		<-timer.C
@@ -211,17 +213,30 @@ func StartGame(rid int32) {
 		}
 	}()
 }
+
+/***
+ * 根据座位号获取用户
+ */
+func getUserBySeat(pRoom *msg.RoomInfo, seat int32) *msg.GameUserItem {
+	for _, v := range pRoom.ArrPlayerInfo {
+		if v.Seat == seat {
+			return v
+		}
+	}
+	return nil
+}
+
 func getNextSeat(rid int32) int32 {
 	pRoom, _ := playerData.GetPRoom(rid)
 	currSeat := pRoom.Painter
 	i := currSeat
 	for {
-		if i == int32(len(pRoom.MapPlayerInfo)) {
+		if i == int32(len(pRoom.ArrPlayerInfo)) {
 			i = 1
 		} else {
 			i++
 		}
-		if pRoom.MapPlayerInfo[i] != nil {
+		if pRoom.ArrPlayerInfo[i] != nil {
 			return i
 		}
 	}
@@ -233,10 +248,10 @@ func getNextSeat(rid int32) int32 {
  */
 func showAnswer(rid int32) {
 
-	data := &msg.SC_ResultNHWC{
+	data := &msg.SC_NHWCResult{
 		Word: playerData.RoomMap[rid].Word,
 	}
-	BroadCast(rid, uint32(msg.MsgId_MSG_SC_StartNHWC), data, "")
+	BroadCast(rid, uint32(msg.MsgId_MSG_SC_NHWCStart), data, "")
 
 	timer2 := time.NewTimer(time.Second * time.Duration(3))
 	go func() {
@@ -256,10 +271,10 @@ func showAnswer(rid int32) {
  * 游戏结束
  */
 func OverGame(rid int32) {
-	data := &msg.SC_OverNHWC{
+	data := &msg.SC_NHWCOver{
 		Word: playerData.RoomMap[rid].Word,
 	}
-	BroadCast(rid, uint32(msg.MsgId_MSG_SC_StartNHWC), data, "")
+	BroadCast(rid, uint32(msg.MsgId_MSG_SC_NHWCStart), data, "")
 
 	playerData.ResetGame(rid)
 }
@@ -343,6 +358,6 @@ func (t *RouterDrawPath) Handle(req ziface.IRequest) {
 	rid := pUser.Rid
 	data := &msg.SC_NHWCDrawPath{}
 	data.PointArr = msgTemp.PointArr
-	BroadCast(rid, uint32(msg.MsgId_MSG_SC_StartNHWC), data, "")
+	BroadCast(rid, uint32(msg.MsgId_MSG_SC_NHWCStart), data, "")
 
 }

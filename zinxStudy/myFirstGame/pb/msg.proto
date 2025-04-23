@@ -25,17 +25,20 @@ enum MsgId {
   MSG_CS_MatchRoom = 125;  // 匹配房间请求
   MSG_SC_MatchRoom = 126;  // 匹配房间响应
 
-  MSG_CS_ReadyNHWC = 1001;  // 你画我猜准备请求
-  MSG_SC_ReadyNHWC = 1002;  // 你画我猜准备相应
+  MSG_CS_ExitRoom = 127;  // 退出房间请求
+  MSG_SC_ExitRoom = 128;  // 退出房间请求
 
-  MSG_SC_StartNHWC = 1004;  // 你画我猜游戏开始
+  MSG_CS_NHWCReady = 1001;  // 你画我猜准备请求
+  MSG_SC_NHWCReady = 1002;  // 你画我猜准备相应
+
+  MSG_SC_NHWCStart = 1004;  // 你画我猜游戏开始
 
 
 
 
-  MSG_SC_ResultNHWC = 1008;  // 你画我猜游戏单轮游戏结束
+  MSG_SC_NHWCResult = 1008;  // 你画我猜游戏单轮游戏结束
 
-  MSG_SC_OverNHWC = 1010;  // 你画我猜游戏结束
+  MSG_SC_NHWCOver = 1010;  // 你画我猜游戏结束
 
   MSG_CS_NHWCDrawClear = 1011;  // 绘画清理请求
   MSG_SC_NHWCDrawClear = 1012;  // 绘画清理响应
@@ -46,8 +49,12 @@ enum MsgId {
   MSG_CS_NHWCDrawColor = 1015;  // 绘画颜色请求
   MSG_SC_NHWCDrawColor = 1016;  // 绘画颜色响应
 
-  MSG_CS_NHWCDrawPath = 1017;  // 绘画路径请求
-  MSG_SC_NHWCDrawPath = 1018;  // 绘画路径响应
+  MSG_CS_NHWCDrawPath = 1017;  // 游戏绘画path请求
+  MSG_SC_NHWCDrawPath = 1018;  // 游戏绘画path响应
+
+  MSG_CS_NHWCAnswer = 1019;  // 猜答案请求
+  MSG_SC_NHWCAnswer = 1020;  // 猜答案响应
+
 
 }
 
@@ -87,9 +94,9 @@ message RoomInfo {
     int32 state = 4;
     //房间创建时间
     int64 createTime = 5;
-    //开始时间
-	int64 startTime = 6;
-    //结果时间
+    //倒计时 开始小局时长
+	int64 gameTime = 6;
+    //倒计时 小局游戏结束到下一局时长
 	int64 resultTime = 7;
     //提示z
 	string hint = 8;
@@ -100,7 +107,8 @@ message RoomInfo {
     //画师
     int32 painter = 11;
     //房间所有玩家
-    map<int32, GameUserItem> mapPlayerInfo = 12;
+    //map<int32, GameUserItem> mapPlayerInfo1 = 12;
+    repeated GameUserItem arrPlayerInfo = 12;
 }
 
 
@@ -111,10 +119,11 @@ message GameUserItem {
     PlayerInfo plyer = 1;
     // 房间id
     int32 rid = 2;
-    // 房间id
+    // 座位
     int32 seat = 3;
     // 分数
     int32 score = 4;
+    //是否准备
     bool isReady = 5;
 }
 
@@ -133,7 +142,7 @@ message CS_Login {
 message SC_Login {
     int32 code = 1;
     string token = 2;
-    PlayerInfo PlayerInfo = 3;
+    PlayerInfo playerInfo = 3;
 }
 
 /**
@@ -218,14 +227,14 @@ message SC_MatchRoom {
 /**
  * 准备请求
  */
-message CS_ReadyNHWC {
+message CS_NHWCReady {
 
 }
 
 /**
  * 准备响应
  */
-message SC_ReadyNHWC {
+message SC_NHWCReady {
     int32 code = 1;
     RoomInfo roomInfo = 2;
 }
@@ -234,19 +243,19 @@ message SC_ReadyNHWC {
 /**
  * 游戏开始
  */
-message SC_StartNHWC {
+message SC_NHWCStart {
     RoomInfo roomInfo = 1;
 }
 
 /**
- * 小聚游戏结束 */
-message SC_ResultNHWC {
+ * 小局游戏结束 */
+message SC_NHWCResult {
     string word = 1;
 }
 
 /**
  * 全部游戏结束 */
-message SC_OverNHWC {
+message SC_NHWCOver {
     string word = 1;
 }
 
@@ -324,4 +333,39 @@ message CS_NHWCDrawPath {
  */
 message SC_NHWCDrawPath {
     repeated NHWCPoint pointArr = 1;
+}
+
+
+/**
+ * 退出房间请求
+ */
+message CS_ExitRoom {
+
+
+}
+
+/**
+ * 退出房间响应
+ */
+message SC_ExitRoom {
+    string account = 1;
+}
+
+/**
+ * 猜答案请求
+ */
+message CS_NHWCAnswer {
+    string answer = 1;
+}
+
+/**
+ * 猜答案请求响应
+ */
+message SC_NHWCAnswer {
+    // 座位号
+    int32 seat =1;
+    // 是否正确
+    bool isRight = 2;
+    // 得分
+    repeated GameUserItem arrPlayerInfo = 3;
 }

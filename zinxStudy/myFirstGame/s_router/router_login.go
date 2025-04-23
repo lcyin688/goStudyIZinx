@@ -26,7 +26,12 @@ var ClientsMapCon = make(map[ziface.IConnection]ClientNHWC)
 func Bind(req ziface.IConnection, account string) {
 	c, ok := ClientsMapAccount[account]
 	if !ok {
-		fmt.Println("没有这个client")
+		fmt.Println("没有这个client Bind ")
+		c = ClientNHWC{
+			Account: account,
+			Conn:    &req,
+		}
+		ClientsMapAccount[account] = c
 	} else {
 		fmt.Println(account, "号用户与", account, "号客户端绑定")
 		c.Account = account
@@ -38,7 +43,12 @@ func Bind(req ziface.IConnection, account string) {
 func BindByCon(req ziface.IConnection, account string) {
 	c, ok := ClientsMapCon[req]
 	if !ok {
-		fmt.Println("没有这个client")
+		fmt.Println("没有这个client BindByCon")
+		c = ClientNHWC{
+			Account: account,
+			Conn:    &req,
+		}
+		ClientsMapCon[req] = c
 	} else {
 		fmt.Println(account, "BindByCon", account, "号客户端绑定")
 		c.Account = account
@@ -73,7 +83,7 @@ func BroadCast(roomId int32, msgId uint32, msg proto.Message, exclude string) {
 		}
 	} else { //只给某个房间内的人
 		pRoom, _ := playerData.GetPRoom(roomId)
-		for _, userItem := range pRoom.MapPlayerInfo {
+		for _, userItem := range pRoom.ArrPlayerInfo {
 			if userItem != nil && userItem.Plyer.Account != exclude {
 				user := ClientsMapAccount[userItem.Plyer.Account]
 				if user.Conn != nil {

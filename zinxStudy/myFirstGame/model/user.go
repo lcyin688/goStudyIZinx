@@ -77,8 +77,16 @@ func RegisteUserData(uid string, password string, headId int32) enumeCode.ErrCod
 	} else {
 		initMongod()
 		collection := mongoClient.Database("mydb").Collection("users")
-		InsertUser(collection, uid, password, headId)
-		code = enumeCode.OK
+		//首先看下账号是否已经存在了
+		var result UserData
+		err := collection.FindOne(context.TODO(), bson.M{"uid": uid}).Decode(&result)
+		if err == nil {
+			code = enumeCode.RegisterSameName
+			// ClearUserData() //测试删除数据库
+		} else {
+			InsertUser(collection, uid, password, headId)
+			code = enumeCode.OK
+		}
 	}
 	return code
 }
@@ -114,4 +122,12 @@ func initMongod() {
 		mongoClient = client
 	}
 
+}
+
+/** 清空数据库 **/
+func ClearUserData() {
+	initMongod()
+	collection := mongoClient.Database("mydb").Collection("users")
+	// 清空数据库
+	collection.Drop(context.TODO())
 }
