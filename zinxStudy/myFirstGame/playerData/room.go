@@ -2,39 +2,41 @@ package playerData
 
 import (
 	"fmt"
-	"time"
 
 	enumeCode "github.com/aceld/zinx/myFirstGame/EnumeCode"
 	"github.com/aceld/zinx/myFirstGame/config"
 	msg "github.com/aceld/zinx/myFirstGame/pb"
+	"github.com/aceld/zinx/myFirstGame/tool"
 	"github.com/aceld/zinx/ziface"
 )
 
 var RoomMap map[int32]*msg.RoomInfo
 
 func init() {
-
 	RoomMap = make(map[int32]*msg.RoomInfo)
 	for i := 1; i <= config.RoomSum; i++ {
-		// seatMap := make(map[int32]*msg.GameUserItem)// 不懂map 通过pb 如何给前端正常接收
-		// for j := 1; j <= config.SeatSum; j++ {
-		// 	seatMap[int32(j)] = nil
-		// }
-		arr := []*msg.GameUserItem{}
-		RoomMap[int32(i)] = &msg.RoomInfo{
-			Rid:           int32(i),
-			GameNum:       0,
-			Max:           int32(config.SeatSum),
-			State:         int32(msg.RoomState_None),
-			ArrPlayerInfo: arr,
-			CreateTime:    0,
-			GameTime:      0,
-			ResultTime:    0,
-			Hint:          "",
-			Word:          "",
-			WordIndex:     0,
-			Painter:       0,
-		}
+		createOneTabByRid(int32(i))
+	}
+}
+
+/**
+ * 用房间号创建一个房间
+ */
+func createOneTabByRid(i int32) {
+	arr := []*msg.GameUserItem{}
+	RoomMap[i] = &msg.RoomInfo{
+		Rid:           i,
+		GameNum:       0,
+		Max:           int32(config.SeatSum),
+		State:         int32(msg.RoomState_None),
+		ArrPlayerInfo: arr,
+		CreateTime:    0,
+		GameTime:      0,
+		ResultTime:    0,
+		Hint:          "",
+		Word:          "",
+		WordIndex:     0,
+		Painter:       0,
 	}
 }
 
@@ -87,33 +89,44 @@ func GetANewRid() int32 {
 	return maxRid
 }
 
-func CreateRoom() *msg.RoomInfo {
+func CreateRoom(req ziface.IConnection, gameUserItem *msg.GameUserItem) (int32, *msg.RoomInfo) {
+	// rid := GetANewRid()
+	// timestamp := time.Now().Unix()
+	// fmt.Println("当前时间戳（秒）：", timestamp)
+	// arr := []*msg.GameUserItem{}
 
-	rid := GetANewRid()
-	timestamp := time.Now().Unix()
-	fmt.Println("当前时间戳（秒）：", timestamp)
-	// mapGameUserItem := make(map[int32]*msg.GameUserItem)
-	// for i := 1; i < config.SeatSum; i++ {
-	// 	mapGameUserItem[int32(i)] = nil
-	// }
-	arr := []*msg.GameUserItem{}
+	var code int32 = int32(enumeCode.OK)
 
-	r := msg.RoomInfo{
-		Rid:           rid,
-		GameNum:       0,
-		Max:           int32(config.SeatSum),
-		State:         int32(msg.RoomState_None),
-		CreateTime:    timestamp,
-		GameTime:      int64(config.GameTime),
-		ResultTime:    int64(config.ResultTime),
-		Hint:          "",
-		Word:          "",
-		WordIndex:     0,
-		Painter:       0,
-		ArrPlayerInfo: arr,
+	roomItem := &msg.RoomInfo{}
+	//首先 自己如果已经在房间了直接给在的房间
+	if gameUserItem.Rid != 0 {
+		pRoom, ok := GetPRoom(gameUserItem.Rid)
+		if ok {
+			code = int32(enumeCode.OK)
+			roomItem = pRoom
+		}
+	} else {
+		//如果一个人都没有的话进去占桌子 如果没有空桌子就新建桌子
+		for _, v := range RoomMap {
+			if (v.State) <= int32(msg.RoomState_Ready) { //还没开打
+				//桌子没满
+				if len(v.ArrPlayerInfo) == 0 {
+					code = int32(enumeCode.OK)
+					//匹配成功的时候好自己就坐进去
+					gameUserItem.Rid = v.Rid
+					v.ArrPlayerInfo = append(v.ArrPlayerInfo, gameUserItem)
+					roomItem = v
+					break
+				}
+
+			}
+		}
+		//
+
 	}
-	SetPRoom(&r)
-	return &r
+
+	SetPRoom(roomItem)
+	return code, roomItem
 }
 
 func EnterRoom(pUser *msg.GameUserItem, pRoom *msg.RoomInfo, seat int32) {
@@ -147,18 +160,93 @@ func ResetGame(rid int32) {
 func MathchRoom(req ziface.IConnection, gameUserItem *msg.GameUserItem) (int32, *msg.RoomInfo) {
 	code := int32(enumeCode.NoRoomNotStart)
 	roomItem := &msg.RoomInfo{}
-	for _, v := range RoomMap {
-		if (v.State) <= int32(msg.RoomState_Ready) { //还没开打
-			//桌子没满
-			if len(v.ArrPlayerInfo) < int(v.Max) {
-				code = int32(enumeCode.OK)
-				//匹配成功的时候好自己就坐进去
-				v.ArrPlayerInfo = append(v.ArrPlayerInfo, gameUserItem)
-				roomItem = v
-				break
-			}
-
+	//首先 自己如果已经在房间了直接给在的房间
+	if gameUserItem.Rid != 0 {
+		pRoom, ok := GetPRoom(gameUserItem.Rid)
+		if ok {
+			code = int32(enumeCode.OK)
+			roomItem = pRoom
 		}
+	} else {
+		isHaveFree := false
+		//优先匹配桌子上有人但是还没开打的房间
+		for _, v := range RoomMap {
+			if (v.State) <= int32(msg.RoomState_Ready) { //还没开打
+				//桌子没满
+				if len(v.ArrPlayerInfo) < int(v.Max) {
+					if len(v.ArrPlayerInfo) > 0 {
+						code = int32(enumeCode.OK)
+						//匹配成功的时候好自己就坐进去
+						gameUserItem.Rid = v.Rid
+						v.ArrPlayerInfo = append(v.ArrPlayerInfo, gameUserItem)
+						roomItem = v
+						isHaveFree = true
+						break
+					}
+				}
+
+			}
+		}
+		if !isHaveFree {
+			for _, v := range RoomMap {
+				if (v.State) <= int32(msg.RoomState_Ready) { //还没开打
+					//桌子没满
+					if len(v.ArrPlayerInfo) == 0 {
+						code = int32(enumeCode.OK)
+						//匹配成功的时候好自己就坐进去
+						gameUserItem.Rid = v.Rid
+						v.ArrPlayerInfo = append(v.ArrPlayerInfo, gameUserItem)
+						roomItem = v
+						isHaveFree = true
+						break
+					}
+
+				}
+			}
+		}
+		if !isHaveFree {
+			newRid := GetANewRid()
+			createOneTabByRid(int32(newRid))
+		}
+
 	}
 	return code, roomItem
+}
+
+func ExitRoom(account string) int32 {
+	code := int32(enumeCode.OK)
+	pUser := GetPUser(account)
+	pRoom, ok := GetPRoom(pUser.Rid)
+	if ok { //如果房间开打了就不能退出了
+		allowedStates := []int32{int32(msg.RoomState_None), int32(msg.RoomState_Ready), int32(msg.RoomState_Over)}
+		if tool.Contains(allowedStates, pRoom.State) {
+			//退出房间的清理掉房间数据
+			ClearRoomDataByOnePlayerAccount(account)
+		} else {
+			code = int32(enumeCode.ExitOnStart)
+		}
+
+	} else {
+		code = int32(enumeCode.Failed)
+	}
+	return code
+}
+
+// 清理掉玩家房间数据信息
+func ClearRoomDataByOnePlayerAccount(account string) {
+	pUser := GetPUser(account)
+	pRoom, ok := GetPRoom(pUser.Rid)
+	if ok {
+		for i, user := range pRoom.ArrPlayerInfo {
+			if user.Plyer.Account == account {
+				pRoom.ArrPlayerInfo = append(pRoom.ArrPlayerInfo[:i], pRoom.ArrPlayerInfo[i+1:]...)
+			}
+		}
+	}
+
+	pUser.Rid = 0
+	pUser.Seat = 0
+	pUser.Score = 0
+	pUser.IsReady = false
+
 }

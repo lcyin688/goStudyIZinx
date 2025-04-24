@@ -16,7 +16,7 @@ import (
 type (
 	ClientNHWC struct {
 		Account string
-		Conn    *ziface.IConnection
+		Conn    ziface.IConnection
 	}
 )
 
@@ -29,13 +29,13 @@ func Bind(req ziface.IConnection, account string) {
 		fmt.Println("没有这个client Bind ")
 		c = ClientNHWC{
 			Account: account,
-			Conn:    &req,
+			Conn:    req,
 		}
 		ClientsMapAccount[account] = c
 	} else {
 		fmt.Println(account, "号用户与", account, "号客户端绑定")
 		c.Account = account
-		c.Conn = &req
+		c.Conn = req
 	}
 	BindByCon(req, account)
 }
@@ -46,13 +46,13 @@ func BindByCon(req ziface.IConnection, account string) {
 		fmt.Println("没有这个client BindByCon")
 		c = ClientNHWC{
 			Account: account,
-			Conn:    &req,
+			Conn:    req,
 		}
 		ClientsMapCon[req] = c
 	} else {
 		fmt.Println(account, "BindByCon", account, "号客户端绑定")
 		c.Account = account
-		c.Conn = &req
+		c.Conn = req
 	}
 
 }
@@ -70,16 +70,34 @@ func SendMsg(msgID uint32, data proto.Message, req ziface.IConnection) {
 	}
 	// 调用Zinx框架的SendMsg发包
 	if err := req.SendMsg(msgID, msg); err != nil {
-		fmt.Println("Player SendMsg error !")
+		fmt.Println("Player SendMsg error !", err)
+		return
+	}
+}
+
+func SendBuffMsg(msgID uint32, data proto.Message, req ziface.IConnection) {
+	if req == nil {
+		fmt.Println("connection in player is nil")
+		return
+	}
+	// 将proto Message结构体序列化
+	msg, err := proto.Marshal(data)
+	if err != nil {
+		fmt.Println("marshal msg err: ", err)
+		return
+	}
+	// 调用Zinx框架的SendMsg发包
+	if err := req.SendBuffMsg(msgID, msg); err != nil {
+		fmt.Println("Player SendBuffMsg error ! ", err)
 		return
 	}
 }
 
 func BroadCast(roomId int32, msgId uint32, msg proto.Message, exclude string) {
-	fmt.Println("广播消息", msg)
+	fmt.Println("广播消息 roomId msgId ", roomId, msgId, msg)
 	if roomId == 0 {
 		for _, user := range ClientsMapAccount {
-			SendMsg(msgId, msg, *user.Conn)
+			SendBuffMsg(msgId, msg, user.Conn)
 		}
 	} else { //只给某个房间内的人
 		pRoom, _ := playerData.GetPRoom(roomId)
@@ -87,7 +105,7 @@ func BroadCast(roomId int32, msgId uint32, msg proto.Message, exclude string) {
 			if userItem != nil && userItem.Plyer.Account != exclude {
 				user := ClientsMapAccount[userItem.Plyer.Account]
 				if user.Conn != nil {
-					SendMsg(msgId, msg, *user.Conn)
+					SendBuffMsg(msgId, msg, user.Conn)
 				}
 			}
 		}

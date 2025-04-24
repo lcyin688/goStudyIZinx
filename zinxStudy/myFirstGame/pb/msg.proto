@@ -348,7 +348,9 @@ message CS_ExitRoom {
  * 退出房间响应
  */
 message SC_ExitRoom {
-    string account = 1;
+    int32 code = 1;
+    //唯一标识 账号
+    string account = 2;        
 }
 
 /**

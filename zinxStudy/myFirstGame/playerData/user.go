@@ -13,7 +13,9 @@ func init() {
 }
 
 func SetPUser(pUser *msg.GameUserItem) {
-	UserMap[pUser.Plyer.Account] = pUser
+	if UserMap[pUser.Plyer.Account] == nil { //防止数据被覆盖
+		UserMap[pUser.Plyer.Account] = pUser
+	}
 }
 
 func GetPUser(uid string) *msg.GameUserItem {
