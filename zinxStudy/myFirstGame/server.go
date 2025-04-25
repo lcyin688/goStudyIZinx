@@ -3,6 +3,7 @@ package main
 import (
 	"fmt"
 
+	"github.com/aceld/zinx/myFirstGame/core"
 	msg "github.com/aceld/zinx/myFirstGame/pb"
 	"github.com/aceld/zinx/myFirstGame/s_router"
 	"github.com/aceld/zinx/zconf"
@@ -21,9 +22,6 @@ func main() {
 	initAddRouter(s)
 
 	s.SetOnConnStart(DoConnectionBegin)
-
-	// callOnConnStop
-	// SetOnConnStop
 	s.SetOnConnStop(DoConnectionLost)
 
 	s.Serve()
@@ -77,16 +75,10 @@ func initAddRouter(s ziface.IServer) {
 }
 func DoConnectionBegin(conn ziface.IConnection) {
 	fmt.Println("DoConnectionBegin is Called ... ")
-	err := conn.SendMsg(2, []byte("DoConnection BEGIN..."))
-	if err != nil {
-		fmt.Println(err)
-	}
 }
 
 func DoConnectionLost(conn ziface.IConnection) {
 	//断开连接的时候打印下是谁掉线了
-	fmt.Println("DoConnectionBegin is Called ... 001 ")
-
 	// Get the "pID" property of the current connection
 	// 获取当前连接的PID属性
 	pID, _ := conn.GetProperty("pID")
@@ -95,22 +87,12 @@ func DoConnectionLost(conn ziface.IConnection) {
 		playerID = pID.(int32)
 	}
 	fmt.Println("DoConnectionBegin is Called ... playerID ", playerID)
-	// Get the corresponding player object based on the player ID
 	// 根据pID获取对应的玩家对象
-	// player := core.WorldMgrObj.GetPlayerByPID(playerID)
+	player := core.WorldMgrObj.GetPlayerByPID(playerID)
 
 	// Trigger the player's disconnection business logic
 	// 触发玩家下线业务
-	// if player != nil {
-	// 	player.LostConnection()
-	// }
-
-	if s_router.ClientsMapCon != nil {
-		if client, ok := s_router.ClientsMapCon[conn]; ok {
-			account := client.Account
-			fmt.Println("DoConnectionLost is Called ... ", account)
-			// delete(s_router.ClientsMapCon, conn)
-		}
+	if player != nil {
+		player.LostConnection()
 	}
-
 }

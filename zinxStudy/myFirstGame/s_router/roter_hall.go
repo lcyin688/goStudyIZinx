@@ -5,8 +5,8 @@ import (
 	"time"
 
 	enumeCode "github.com/aceld/zinx/myFirstGame/EnumeCode"
+	"github.com/aceld/zinx/myFirstGame/core"
 	msg "github.com/aceld/zinx/myFirstGame/pb"
-	"github.com/aceld/zinx/myFirstGame/playerData"
 	"github.com/aceld/zinx/ziface"
 	"github.com/aceld/zinx/znet"
 	"google.golang.org/protobuf/proto"
@@ -18,7 +18,7 @@ type RouterHall struct {
 
 func (t *RouterHall) Handle(req ziface.IRequest) {
 
-	roomList := playerData.GetRoomIdList()
+	roomList := core.GetRoomIdList()
 	data := &msg.SC_HallInfo{
 		RoomArr: roomList,
 	}
@@ -29,22 +29,40 @@ type RouterCreateRoom struct {
 	znet.BaseRouter
 }
 
-func (t *RouterCreateRoom) Handle(req ziface.IRequest) {
-	msgTemp := &msg.CS_CreateRoom{}
-	err := proto.Unmarshal(req.GetData(), msgTemp)
+/***
+ * 获取玩家
+ */
+func GetPlayerByRequest(request ziface.IRequest) *core.Player {
+	// (2. 得知当前的消息是从哪个玩家传递来的,从连接属性pID中获取)
+	pID, err := request.GetConnection().GetProperty("pID")
 	if err != nil {
-		fmt.Println("Position Unmarshal error ", err, " data = ", req.GetData())
+		fmt.Println("GetProperty pID error", err)
+		request.GetConnection().Stop()
+		return nil
+	}
+	// (3. 根据pID得到player对象)
+	player := core.WorldMgrObj.GetPlayerByPID(pID.(int32))
+	return player
+}
+
+func (t *RouterCreateRoom) Handle(request ziface.IRequest) {
+	msgTemp := &msg.CS_CreateRoom{}
+	err := proto.Unmarshal(request.GetData(), msgTemp)
+	if err != nil {
+		fmt.Println("Position Unmarshal error ", err, " data = ", request.GetData())
+		return
+	}
+	player := GetPlayerByRequest(request)
+	if player == nil {
 		return
 	}
 
-	account := ClientsMapCon[req.GetConnection()].Account
-	pUser := playerData.GetPUser(account)
-	code, roomItem := playerData.CreateRoom(req.GetConnection(), pUser)
+	code, roomItem := core.CreateRoom(request.GetConnection(), player.GameUserItem)
 	data := &msg.SC_CreateRoom{
 		Code:     code,
 		RoomInfo: roomItem,
 	}
-	SendMsg(uint32(msg.MsgId_MSG_SC_CreateRoom), data, req.GetConnection())
+	SendMsg(uint32(msg.MsgId_MSG_SC_CreateRoom), data, request.GetConnection())
 }
 
 type RouterJoinRoom struct {
@@ -62,29 +80,33 @@ func (t *RouterJoinRoom) Handle(req ziface.IRequest) {
 }
 
 // 进入房间
-func onEnter(req ziface.IRequest, msgTemp *msg.CS_JoinRoom) {
+func onEnter(request ziface.IRequest, msgTemp *msg.CS_JoinRoom) {
 	rid := msgTemp.RoomId
-	roomInfo, ok := playerData.GetPRoom(rid)
+	roomInfo, ok := core.GetPRoom(rid)
 	if ok {
-		freeSeat := playerData.GetFreeSeat(roomInfo)
+		freeSeat := core.GetFreeSeat(roomInfo)
 		if freeSeat == 0 { //房间已满
 			data := &msg.SC_JoinRoom{
 				Code: int32(enumeCode.LoginPassWord),
 			}
-			SendMsg(uint32(msg.MsgId_MSG_SC_JoinRoom), data, req.GetConnection())
+			SendMsg(uint32(msg.MsgId_MSG_SC_JoinRoom), data, request.GetConnection())
 		} else {
-			pUser := playerData.GetPUser(string(rid))
-			playerData.EnterRoom(pUser, roomInfo, int32(freeSeat))
+			player := GetPlayerByRequest(request)
+			if player == nil {
+				return
+			}
+
+			core.EnterRoom(player.GameUserItem, roomInfo, int32(freeSeat))
 			// 通知客户端进入房间
 			data := &msg.SC_JoinRoom{
 				Code:     int32(enumeCode.OK),
 				RoomInfo: roomInfo,
 			}
-			SendMsg(uint32(msg.MsgId_MSG_SC_JoinRoom), data, req.GetConnection())
+			SendMsg(uint32(msg.MsgId_MSG_SC_JoinRoom), data, request.GetConnection())
 
 			//通知其他客户端有人加入房间
 
-			roomList := playerData.GetRoomIdList()
+			roomList := core.GetRoomIdList()
 			dataHall := &msg.SC_HallInfo{
 				RoomArr: roomList,
 			}
@@ -95,7 +117,7 @@ func onEnter(req ziface.IRequest, msgTemp *msg.CS_JoinRoom) {
 		data := &msg.SC_JoinRoom{
 			Code: int32(enumeCode.NoRoom),
 		}
-		SendMsg(uint32(msg.MsgId_MSG_SC_JoinRoom), data, req.GetConnection())
+		SendMsg(uint32(msg.MsgId_MSG_SC_JoinRoom), data, request.GetConnection())
 	}
 
 }
@@ -104,23 +126,26 @@ type RouterMatchRoom struct {
 	znet.BaseRouter
 }
 
-func (t *RouterMatchRoom) Handle(req ziface.IRequest) {
+func (t *RouterMatchRoom) Handle(request ziface.IRequest) {
 	msgTemp := &msg.CS_MatchRoom{}
-	err := proto.Unmarshal(req.GetData(), msgTemp)
+	err := proto.Unmarshal(request.GetData(), msgTemp)
 	if err != nil {
-		fmt.Println("Position Unmarshal error ", err, " data = ", req.GetData())
+		fmt.Println("Position Unmarshal error ", err, " data = ", request.GetData())
 		return
 	}
-	account := ClientsMapCon[req.GetConnection()].Account
-	pUser := playerData.GetPUser(account)
-	code, roomItem := playerData.MathchRoom(req.GetConnection(), pUser)
+	player := GetPlayerByRequest(request)
+	if player == nil {
+		return
+	}
+
+	code, roomItem := core.MathchRoom(request.GetConnection(), player.GameUserItem)
 	data := &msg.SC_CreateRoom{
 		Code:     code,
 		RoomInfo: roomItem,
 	}
-	SendMsg(uint32(msg.MsgId_MSG_SC_MatchRoom), data, req.GetConnection())
+	SendMsg(uint32(msg.MsgId_MSG_SC_MatchRoom), data, request.GetConnection())
 	//匹配房间广播通知其他玩家
-	BroadCast(roomItem.Rid, uint32(msg.MsgId_MSG_SC_MatchRoom), data, pUser.Plyer.Account)
+	BroadCast(roomItem.Rid, uint32(msg.MsgId_MSG_SC_MatchRoom), data, player.GameUserItem.Plyer.Account)
 
 }
 
@@ -135,31 +160,33 @@ func (t *RouterReady) Handle(req ziface.IRequest) {
 		fmt.Println("Position Unmarshal error ", err, " data = ", req.GetData())
 		return
 	}
-	onReady(req.GetConnection(), msgTemp)
+	onReady(req, msgTemp)
 }
 
 // 客户端请求准备
-func onReady(req ziface.IConnection, msgTemp *msg.SC_NHWCReady) {
-	account := ClientsMapCon[req].Account
-	pUser := playerData.GetPUser(account)
-	rid := pUser.Rid
-	roomInfo, _ := playerData.GetPRoom(rid)
-	if pUser.IsReady {
+func onReady(request ziface.IRequest, msgTemp *msg.SC_NHWCReady) {
+	player := GetPlayerByRequest(request)
+	if player == nil {
+		return
+	}
+	rid := player.GameUserItem.Rid
+	roomInfo, _ := core.GetPRoom(rid)
+	if player.GameUserItem.IsReady {
 		// 	fmt.Println("用户已经准备")
 		data := &msg.SC_NHWCReady{
 			Code:     int32(enumeCode.PlayerReadyed),
 			RoomInfo: roomInfo,
 		}
-		SendMsg(uint32(msg.MsgId_MSG_SC_NHWCReady), data, req)
+		SendMsg(uint32(msg.MsgId_MSG_SC_NHWCReady), data, request.GetConnection())
 	} else {
-		pUser.IsReady = true
+		player.GameUserItem.IsReady = true
 		data := &msg.SC_NHWCReady{
 			Code:     int32(enumeCode.OK),
 			RoomInfo: roomInfo,
 		}
 		BroadCast(rid, uint32(msg.MsgId_MSG_SC_NHWCReady), data, "")
-		if CanStartGame(pUser.Rid) {
-			StartGame(pUser.Rid)
+		if CanStartGame(player.GameUserItem.Rid) {
+			StartGame(player.GameUserItem.Rid)
 		}
 	}
 
@@ -171,7 +198,7 @@ func onReady(req ziface.IConnection, msgTemp *msg.SC_NHWCReady) {
 func CanStartGame(rid int32) bool {
 	seatSum := 0
 	readySum := 0
-	seatMap := playerData.RoomMap[rid].ArrPlayerInfo
+	seatMap := core.RoomMap[rid].ArrPlayerInfo
 	for _, seat := range seatMap {
 		if seat != nil {
 			seatSum++
@@ -191,11 +218,11 @@ func CanStartGame(rid int32) bool {
  * 开始游戏
  */
 func StartGame(rid int32) {
-	pRoom, _ := playerData.GetPRoom(rid)
+	pRoom, _ := core.GetPRoom(rid)
 	pRoom.Painter = getNextSeat(rid)
 	pRoom.WordIndex++
-	pRoom.Word = playerData.WordsList[pRoom.WordIndex].Word
-	pRoom.Hint = playerData.WordsList[pRoom.WordIndex].D
+	pRoom.Word = core.WordsList[pRoom.WordIndex].Word
+	pRoom.Hint = core.WordsList[pRoom.WordIndex].D
 	pRoom.State = int32(msg.RoomState_Draw)
 	pRoom.GameNum++
 	pRoom.GameTime = time.Now().Unix()
@@ -229,7 +256,7 @@ func getUserBySeat(pRoom *msg.RoomInfo, seat int32) *msg.GameUserItem {
 }
 
 func getNextSeat(rid int32) int32 {
-	pRoom, _ := playerData.GetPRoom(rid)
+	pRoom, _ := core.GetPRoom(rid)
 	currSeat := pRoom.Painter
 	i := currSeat
 	for {
@@ -251,17 +278,17 @@ func getNextSeat(rid int32) int32 {
 func showAnswer(rid int32) {
 
 	data := &msg.SC_NHWCResult{
-		Word: playerData.RoomMap[rid].Word,
+		Word: core.RoomMap[rid].Word,
 	}
 	BroadCast(rid, uint32(msg.MsgId_MSG_SC_NHWCStart), data, "")
 
 	timer2 := time.NewTimer(time.Second * time.Duration(3))
 	go func() {
 		<-timer2.C
-		if playerData.RoomMap[rid] == nil || playerData.RoomMap[rid].State != int32(msg.RoomState_Result) {
+		if core.RoomMap[rid] == nil || core.RoomMap[rid].State != int32(msg.RoomState_Result) {
 			return
 		}
-		if playerData.RoomMap[rid].GameNum >= 3 {
+		if core.RoomMap[rid].GameNum >= 3 {
 			OverGame(rid)
 		} else {
 			StartGame(rid)
@@ -274,29 +301,31 @@ func showAnswer(rid int32) {
  */
 func OverGame(rid int32) {
 	data := &msg.SC_NHWCOver{
-		Word: playerData.RoomMap[rid].Word,
+		Word: core.RoomMap[rid].Word,
 	}
 	BroadCast(rid, uint32(msg.MsgId_MSG_SC_NHWCStart), data, "")
 
-	playerData.ResetGame(rid)
+	core.ResetGame(rid)
 }
 
 type RouterDrawClear struct {
 	znet.BaseRouter
 }
 
-func (t *RouterDrawClear) Handle(req ziface.IRequest) {
+func (t *RouterDrawClear) Handle(request ziface.IRequest) {
 	msgTemp := &msg.CS_NHWCDrawClear{}
-	err := proto.Unmarshal(req.GetData(), msgTemp)
+	err := proto.Unmarshal(request.GetData(), msgTemp)
 	if err != nil {
-		fmt.Println("Position Unmarshal error ", err, " data = ", req.GetData())
+		fmt.Println("Position Unmarshal error ", err, " data = ", request.GetData())
 		return
 	}
 
 	data := &msg.SC_NHWCDrawClear{}
-	account := ClientsMapCon[req.GetConnection()].Account
-	pUser := playerData.GetPUser(account)
-	rid := pUser.Rid
+	player := GetPlayerByRequest(request)
+	if player == nil {
+		return
+	}
+	rid := player.GameUserItem.Rid
 
 	BroadCast(rid, uint32(msg.MsgId_MSG_SC_NHWCDrawClear), data, "")
 
@@ -306,17 +335,19 @@ type RouterDrawWidth struct {
 	znet.BaseRouter
 }
 
-func (t *RouterDrawWidth) Handle(req ziface.IRequest) {
+func (t *RouterDrawWidth) Handle(request ziface.IRequest) {
 	msgTemp := &msg.CS_NHWCDrawWidth{}
-	err := proto.Unmarshal(req.GetData(), msgTemp)
+	err := proto.Unmarshal(request.GetData(), msgTemp)
 	if err != nil {
-		fmt.Println("Position Unmarshal error ", err, " data = ", req.GetData())
+		fmt.Println("Position Unmarshal error ", err, " data = ", request.GetData())
 		return
 	}
 
-	account := ClientsMapCon[req.GetConnection()].Account
-	pUser := playerData.GetPUser(account)
-	rid := pUser.Rid
+	player := GetPlayerByRequest(request)
+	if player == nil {
+		return
+	}
+	rid := player.GameUserItem.Rid
 	data := &msg.SC_NHWCDrawWidth{}
 	data.Width = msgTemp.Width
 	BroadCast(rid, uint32(msg.MsgId_MSG_SC_NHWCDrawWidth), data, "")
@@ -327,17 +358,19 @@ type RouterDrawColor struct {
 	znet.BaseRouter
 }
 
-func (t *RouterDrawColor) Handle(req ziface.IRequest) {
+func (t *RouterDrawColor) Handle(request ziface.IRequest) {
 	msgTemp := &msg.CS_NHWCDrawColor{}
-	err := proto.Unmarshal(req.GetData(), msgTemp)
+	err := proto.Unmarshal(request.GetData(), msgTemp)
 	if err != nil {
-		fmt.Println("Position Unmarshal error ", err, " data = ", req.GetData())
+		fmt.Println("Position Unmarshal error ", err, " data = ", request.GetData())
 		return
 	}
 
-	account := ClientsMapCon[req.GetConnection()].Account
-	pUser := playerData.GetPUser(account)
-	rid := pUser.Rid
+	player := GetPlayerByRequest(request)
+	if player == nil {
+		return
+	}
+	rid := player.GameUserItem.Rid
 	data := &msg.SC_NHWCDrawColor{}
 	data.Color = msgTemp.Color
 	BroadCast(rid, uint32(msg.MsgId_MSG_SC_NHWCDrawColor), data, "")
@@ -348,16 +381,18 @@ type RouterDrawPath struct {
 	znet.BaseRouter
 }
 
-func (t *RouterDrawPath) Handle(req ziface.IRequest) {
+func (t *RouterDrawPath) Handle(request ziface.IRequest) {
 	msgTemp := &msg.CS_NHWCDrawPath{}
-	err := proto.Unmarshal(req.GetData(), msgTemp)
+	err := proto.Unmarshal(request.GetData(), msgTemp)
 	if err != nil {
-		fmt.Println("Position Unmarshal error ", err, " data = ", req.GetData())
+		fmt.Println("Position Unmarshal error ", err, " data = ", request.GetData())
 		return
 	}
-	account := ClientsMapCon[req.GetConnection()].Account
-	pUser := playerData.GetPUser(account)
-	rid := pUser.Rid
+	player := GetPlayerByRequest(request)
+	if player == nil {
+		return
+	}
+	rid := player.GameUserItem.Rid
 	data := &msg.SC_NHWCDrawPath{}
 	data.PointArr = msgTemp.PointArr
 	BroadCast(rid, uint32(msg.MsgId_MSG_SC_NHWCStart), data, "")
@@ -368,23 +403,25 @@ type RouterExitRoom struct {
 	znet.BaseRouter
 }
 
-func (t *RouterExitRoom) Handle(req ziface.IRequest) {
+func (t *RouterExitRoom) Handle(request ziface.IRequest) {
 	msgTemp := &msg.CS_ExitRoom{}
-	err := proto.Unmarshal(req.GetData(), msgTemp)
+	err := proto.Unmarshal(request.GetData(), msgTemp)
 	if err != nil {
-		fmt.Println("Position Unmarshal error ", err, " data = ", req.GetData())
+		fmt.Println("Position Unmarshal error ", err, " data = ", request.GetData())
 		return
 	}
 
-	account := ClientsMapCon[req.GetConnection()].Account
-	pUser := playerData.GetPUser(account)
-	rid := pUser.Rid
-	code := playerData.ExitRoom(account)
+	player := GetPlayerByRequest(request)
+	if player == nil {
+		return
+	}
+	rid := player.GameUserItem.Rid
+	code := core.ExitRoom(player.GameUserItem.Plyer.Account)
 	data := &msg.SC_ExitRoom{
 		Code:    code,
-		Account: account,
+		Account: player.GameUserItem.Plyer.Account,
 	}
-	SendMsg(uint32(msg.MsgId_MSG_SC_ExitRoom), data, req.GetConnection())
+	SendMsg(uint32(msg.MsgId_MSG_SC_ExitRoom), data, request.GetConnection())
 	//匹配房间广播通知其他玩家
-	BroadCast(rid, uint32(msg.MsgId_MSG_SC_ExitRoom), data, account)
+	BroadCast(rid, uint32(msg.MsgId_MSG_SC_ExitRoom), data, player.GameUserItem.Plyer.Account)
 }
