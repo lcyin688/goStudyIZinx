@@ -108,6 +108,7 @@ func CreateRoom(req ziface.IConnection, gameUserItem *msg.GameUserItem) (int32, 
 					code = int32(enumeCode.OK)
 					//匹配成功的时候好自己就坐进去
 					gameUserItem.Rid = v.Rid
+					gameUserItem.Seat = 0
 					v.ArrPlayerInfo = append(v.ArrPlayerInfo, gameUserItem)
 					roomItem = v
 					break
@@ -172,7 +173,10 @@ func MathchRoom(req ziface.IConnection, gameUserItem *msg.GameUserItem) (int32, 
 						code = int32(enumeCode.OK)
 						//匹配成功的时候好自己就坐进去
 						gameUserItem.Rid = v.Rid
+						//获取到当前的座位号 从小到大没有人的座位
+						gameUserItem.Seat = getCurSeatByArrPlayerInfo(v)
 						v.ArrPlayerInfo = append(v.ArrPlayerInfo, gameUserItem)
+
 						roomItem = v
 						isHaveFree = true
 						break
@@ -205,6 +209,21 @@ func MathchRoom(req ziface.IConnection, gameUserItem *msg.GameUserItem) (int32, 
 
 	}
 	return code, roomItem
+}
+
+/*
+*
+获取到当前的座位号 从小到大没有人的座位
+*/
+func getCurSeatByArrPlayerInfo(arr []*msg.GameUserItem) int32 {
+	seatindex := 0
+	for i := 0; i < len(arr); i++ {
+		if arr[i] {
+
+		}
+	}
+
+	return int32(seatindex)
 }
 
 func ExitRoom(account string) int32 {

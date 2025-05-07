@@ -160,11 +160,11 @@ func (t *RouterReady) Handle(req ziface.IRequest) {
 		fmt.Println("Position Unmarshal error ", err, " data = ", req.GetData())
 		return
 	}
-	onReady(req, msgTemp)
+	onReady(req)
 }
 
 // 客户端请求准备
-func onReady(request ziface.IRequest, msgTemp *msg.SC_NHWCReady) {
+func onReady(request ziface.IRequest) {
 	player := GetPlayerByRequest(request)
 	if player == nil {
 		return

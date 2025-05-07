@@ -6,7 +6,7 @@ const (
 	/**  */
 	MultipleLogin bool = false
 	/** 玩游戏的玩家	房间最大座位数*/
-	SeatSum int = 4
+	SeatSum int = 2
 	/** 包含可以 最大玩家总数 */
 	MaxUserSum int = 100
 	/**  */
