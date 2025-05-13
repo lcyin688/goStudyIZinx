@@ -1,4 +1,4 @@
-package enumeCode
+package enumCode
 
 type ErrCodeType int
 
@@ -12,7 +12,7 @@ const (
 	LoginName        ErrCodeType = 6  //登录账号不存在
 	EnterRoomFull    ErrCodeType = 7  //房间已满
 	NoRoom           ErrCodeType = 8  //不存在该房间
-	PlayerReadyed    ErrCodeType = 9  //玩家已经准备过了\
+	PlayerReady      ErrCodeType = 9  //玩家已经准备过了\
 	NoRoomNotStart   ErrCodeType = 10 //没有可以开始游戏的房间
 	ExitOnStart      ErrCodeType = 11 //游戏已经开始不允许退出
 

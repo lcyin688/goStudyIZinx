@@ -3,8 +3,8 @@ package s_router
 import (
 	"fmt"
 
-	enumeCode "github.com/aceld/zinx/myFirstGame/EnumeCode"
 	"github.com/aceld/zinx/myFirstGame/core"
+	enumeCode "github.com/aceld/zinx/myFirstGame/enumCode"
 	"github.com/aceld/zinx/myFirstGame/model"
 	msg "github.com/aceld/zinx/myFirstGame/pb"
 

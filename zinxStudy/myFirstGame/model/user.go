@@ -5,7 +5,7 @@ import (
 	"log"
 	"time"
 
-	enumeCode "github.com/aceld/zinx/myFirstGame/EnumeCode"
+	enumeCode "github.com/aceld/zinx/myFirstGame/enumCode"
 	msg "github.com/aceld/zinx/myFirstGame/pb"
 	"go.mongodb.org/mongo-driver/bson"
 	"go.mongodb.org/mongo-driver/mongo"

@@ -4,8 +4,8 @@ import (
 	"fmt"
 	"time"
 
-	enumeCode "github.com/aceld/zinx/myFirstGame/EnumeCode"
 	"github.com/aceld/zinx/myFirstGame/core"
+	"github.com/aceld/zinx/myFirstGame/enumCode"
 	msg "github.com/aceld/zinx/myFirstGame/pb"
 	"github.com/aceld/zinx/ziface"
 	"github.com/aceld/zinx/znet"
@@ -87,7 +87,7 @@ func onEnter(request ziface.IRequest, msgTemp *msg.CS_JoinRoom) {
 		freeSeat := core.GetFreeSeat(roomInfo)
 		if freeSeat == 0 { //房间已满
 			data := &msg.SC_JoinRoom{
-				Code: int32(enumeCode.LoginPassWord),
+				Code: int32(enumCode.LoginPassWord),
 			}
 			SendMsg(uint32(msg.MsgId_MSG_SC_JoinRoom), data, request.GetConnection())
 		} else {
@@ -99,7 +99,7 @@ func onEnter(request ziface.IRequest, msgTemp *msg.CS_JoinRoom) {
 			core.EnterRoom(player.GameUserItem, roomInfo, int32(freeSeat))
 			// 通知客户端进入房间
 			data := &msg.SC_JoinRoom{
-				Code:     int32(enumeCode.OK),
+				Code:     int32(enumCode.OK),
 				RoomInfo: roomInfo,
 			}
 			SendMsg(uint32(msg.MsgId_MSG_SC_JoinRoom), data, request.GetConnection())
@@ -115,7 +115,7 @@ func onEnter(request ziface.IRequest, msgTemp *msg.CS_JoinRoom) {
 		}
 	} else {
 		data := &msg.SC_JoinRoom{
-			Code: int32(enumeCode.NoRoom),
+			Code: int32(enumCode.NoRoom),
 		}
 		SendMsg(uint32(msg.MsgId_MSG_SC_JoinRoom), data, request.GetConnection())
 	}
@@ -174,14 +174,14 @@ func onReady(request ziface.IRequest) {
 	if player.GameUserItem.IsReady {
 		// 	fmt.Println("用户已经准备")
 		data := &msg.SC_NHWCReady{
-			Code:     int32(enumeCode.PlayerReadyed),
+			Code:     int32(enumCode.PlayerReady),
 			RoomInfo: roomInfo,
 		}
 		SendMsg(uint32(msg.MsgId_MSG_SC_NHWCReady), data, request.GetConnection())
 	} else {
 		player.GameUserItem.IsReady = true
 		data := &msg.SC_NHWCReady{
-			Code:     int32(enumeCode.OK),
+			Code:     int32(enumCode.OK),
 			RoomInfo: roomInfo,
 		}
 		BroadCast(rid, uint32(msg.MsgId_MSG_SC_NHWCReady), data, "")

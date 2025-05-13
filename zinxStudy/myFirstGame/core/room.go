@@ -2,9 +2,10 @@ package core
 
 import (
 	"fmt"
+	"sort"
 
-	enumeCode "github.com/aceld/zinx/myFirstGame/EnumeCode"
 	"github.com/aceld/zinx/myFirstGame/config"
+	enumeCode "github.com/aceld/zinx/myFirstGame/enumCode"
 	msg "github.com/aceld/zinx/myFirstGame/pb"
 	"github.com/aceld/zinx/myFirstGame/tool"
 	"github.com/aceld/zinx/ziface"
@@ -174,7 +175,7 @@ func MathchRoom(req ziface.IConnection, gameUserItem *msg.GameUserItem) (int32, 
 						//匹配成功的时候好自己就坐进去
 						gameUserItem.Rid = v.Rid
 						//获取到当前的座位号 从小到大没有人的座位
-						gameUserItem.Seat = getCurSeatByArrPlayerInfo(v)
+						gameUserItem.Seat = getCurSeatByArrPlayerInfo(v.ArrPlayerInfo)
 						v.ArrPlayerInfo = append(v.ArrPlayerInfo, gameUserItem)
 
 						roomItem = v
@@ -216,14 +217,21 @@ func MathchRoom(req ziface.IConnection, gameUserItem *msg.GameUserItem) (int32, 
 获取到当前的座位号 从小到大没有人的座位
 */
 func getCurSeatByArrPlayerInfo(arr []*msg.GameUserItem) int32 {
-	seatindex := 0
-	for i := 0; i < len(arr); i++ {
-		if arr[i] {
-
+	seatIndex := 0
+	sort.Slice(arr, func(i, j int) bool {
+		return arr[i].Seat < arr[j].Seat
+	})
+	for i := 0; i < len(arr)-1; i++ {
+		if arr[i].Seat+1 != arr[i+1].Seat { //不连续的时候
+			seatIndex = i
+			break
 		}
 	}
-
-	return int32(seatindex)
+	if seatIndex == 0 { //说明没有空座位往后放
+		seatIndex = len(arr)
+	}
+	seatIndex++
+	return int32(seatIndex)
 }
 
 func ExitRoom(account string) int32 {
