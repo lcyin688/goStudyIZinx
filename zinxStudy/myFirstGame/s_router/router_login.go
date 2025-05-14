@@ -53,7 +53,7 @@ func SendBuffMsg(msgID uint32, data proto.Message, req ziface.IConnection) {
  * 广播消息
  */
 func BroadCast(roomId int32, msgId uint32, msg proto.Message, exclude string) {
-	fmt.Println("广播消息 roomId msgId ", roomId, msgId, msg)
+	fmt.Println("广播消息====== roomId msgId ", roomId, msgId, msg)
 	if roomId == 0 {
 		for _, user := range core.WorldMgrObj.Players {
 			if user.GameUserItem.IsOnline {

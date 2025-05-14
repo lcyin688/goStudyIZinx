@@ -237,7 +237,7 @@ func StartGame(rid int32) {
 
 	go func() {
 		<-timer.C
-		if pRoom != nil && pRoom.State == int32(msg.RoomState_Draw) {
+		if pRoom != nil && pRoom.State == int32(msg.RoomState_Result) {
 			showAnswer(rid)
 		}
 	}()
@@ -280,7 +280,7 @@ func showAnswer(rid int32) {
 	data := &msg.SC_NHWCResult{
 		Word: core.RoomMap[rid].Word,
 	}
-	BroadCast(rid, uint32(msg.MsgId_MSG_SC_NHWCStart), data, "")
+	BroadCast(rid, uint32(msg.MsgId_MSG_SC_NHWCResult), data, "")
 
 	timer2 := time.NewTimer(time.Second * time.Duration(3))
 	go func() {

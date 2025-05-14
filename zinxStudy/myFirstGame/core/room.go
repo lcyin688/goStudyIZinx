@@ -194,6 +194,7 @@ func MathchRoom(req ziface.IConnection, gameUserItem *msg.GameUserItem) (int32, 
 						code = int32(enumeCode.OK)
 						//匹配成功的时候好自己就坐进去
 						gameUserItem.Rid = v.Rid
+						gameUserItem.Seat = getCurSeatByArrPlayerInfo(v.ArrPlayerInfo)
 						v.ArrPlayerInfo = append(v.ArrPlayerInfo, gameUserItem)
 						roomItem = v
 						isHaveFree = true

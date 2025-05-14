@@ -317,7 +317,7 @@ func (mh *MsgHandle) AddRouter(msgID uint32, router ziface.IRouter) {
 	// 2. Add the binding relationship between msg and API
 	// (添加msg与api的绑定关系)
 	mh.Apis[msgID] = router
-	zlog.Ins().InfoF("Add Router msgID = %d", msgID)
+	zlog.Ins().DebugF("Add Router msgID = %d", msgID)
 }
 
 // AddRouterSlices adds router handlers using slices
