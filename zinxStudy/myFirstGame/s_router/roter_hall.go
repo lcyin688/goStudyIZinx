@@ -6,6 +6,7 @@ import (
 
 	"github.com/aceld/zinx/myFirstGame/core"
 	"github.com/aceld/zinx/myFirstGame/enumCode"
+	enumeCode "github.com/aceld/zinx/myFirstGame/enumCode"
 	msg "github.com/aceld/zinx/myFirstGame/pb"
 	"github.com/aceld/zinx/ziface"
 	"github.com/aceld/zinx/znet"
@@ -423,5 +424,7 @@ func (t *RouterExitRoom) Handle(request ziface.IRequest) {
 	}
 	SendMsg(uint32(msg.MsgId_MSG_SC_ExitRoom), data, request.GetConnection())
 	//匹配房间广播通知其他玩家
-	BroadCast(rid, uint32(msg.MsgId_MSG_SC_ExitRoom), data, player.GameUserItem.Plyer.Account)
+	if code == int32(enumeCode.OK) {
+		BroadCast(rid, uint32(msg.MsgId_MSG_SC_ExitRoom), data, player.GameUserItem.Plyer.Account)
+	}
 }
