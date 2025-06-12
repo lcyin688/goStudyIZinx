@@ -279,7 +279,7 @@ message SC_NHWCDrawClear {
 }
 
 /**
- * 游戏绘画width请求
+ * 游戏绘画宽度请求
  */
 message CS_NHWCDrawWidth {
 
@@ -288,7 +288,7 @@ message CS_NHWCDrawWidth {
 }
 
 /**
- * 游戏绘画width响应
+ * 游戏绘画宽度响应
  */
 message SC_NHWCDrawWidth {
 
@@ -319,7 +319,7 @@ message Vec2 {
 
 message NHWCPoint {
     bool isStart = 1;
-    Vec2 v2 = 2;
+    Vec2 p = 2;
 }
 
 
