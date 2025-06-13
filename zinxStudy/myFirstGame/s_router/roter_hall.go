@@ -396,7 +396,7 @@ func (t *RouterDrawPath) Handle(request ziface.IRequest) {
 	rid := player.GameUserItem.Rid
 	data := &msg.SC_NHWCDrawPath{}
 	data.PointArr = msgTemp.PointArr
-	BroadCast(rid, uint32(msg.MsgId_MSG_SC_NHWCStart), data, "")
+	BroadCast(rid, uint32(msg.MsgId_MSG_SC_NHWCDrawPath), data, player.GameUserItem.Plyer.Account)
 
 }
 
