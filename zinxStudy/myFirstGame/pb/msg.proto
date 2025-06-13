@@ -312,14 +312,14 @@ message SC_NHWCDrawColor {
     string color = 1;
 }
 
-message Vec2 {
+message PointItem {
   float x = 1;
   float y = 2;
 }
 
 message NHWCPoint {
     bool isStart = 1;
-    Vec2 p = 2;
+    PointItem pos = 2;
 }
 
 
